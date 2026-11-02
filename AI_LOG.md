@@ -1,17 +1,13 @@
-# Yapay Zekâ Kullanım Günlüğü (AI_LOG.md)
+# Yapay Zekâ Kullanım Günlüğü
 
-Bu dosya, yönergedeki yapay zekâ kullanım şeffaflığı koşuluna uygun olarak güncel tutulacaktır.
+## 18 Ekim 2026 — İlk konu
+Önceki araç giriş yönetimi konusundaki planlama ve dokümanların hazırlanmasında yapay zekâ kullanıldı. Ayrıntılar ilk commit geçmişinde mevcuttur.
 
-## Kayıt 1 — 18 Ekim 2026
+## 2 Kasım 2026 — Konu değişikliği
+**Ne istendi?** Projenin araç takip konusundan QR veya manuel kayıt ile çalışan **güvenlik giriş-çıkış takip sistemine** dönüştürülmesi; eski README ve problem kartının güncellenmesi ve gereksinim dokümanı oluşturulması.
 
-**Ne istedim?**  
-Web Programlama dönem projesi için “Ziyaretçi Araç Giriş Yönetimi” adlı GitHub deposuna ilk hafta commit'i olarak problem tanımı, proje açıklaması ve temel depo dokümanlarının hazırlanmasını istedim. Mevcut README dosyasının içerikle değiştirilmesini ayrıca talep ettim.
+**Ne üretildi?** README.md, PROBLEM.md, GEREKSINIMLER.md, örnek ortam değişkenleri ve DOCX gereksinim belgesi taslağı. Giriş ad-soyad-telefon, çıkış zamanı, iki alternatif kayıt kanalı ve yetkili paneli için iş akışları ve kabul kriterleri tanımlandı.
 
-**Ne aldım?**  
-README.md üzerinde proje amacı, roller, iş akışı, teknoloji ve geliştirme planı; PROBLEM.md üzerinde problem hipotezi, görüşme şablonları ve hedeflenen özellikler; .gitignore ve .env.example yapılandırma örnekleri oluşturuldu.
+**Neler kontrol edilmeli / neden?** Kişisel veri güvenliği ve QR çıkış doğrulama riskleri nedeniyle gerçek kişi bilgileri üretilmedi, görüşme alanları boş bırakıldı. Taslak özellikler bitmiş uygulama olarak sunulmadı. Öğrencilerin kodu ve gereksinimleri anlayıp test etmesi, gerçek görüşmeleri yapması ve ders onayı alması gerekiyor.
 
-**Neyi değiştirdim ve neden?**  
-Görüşme yapılmamış kişiler adına sahte yanıt veya iletişim bilgisi üretilmemesi için belgelerde doldurulması gereken alanlar boş bırakıldı. Taslak özellikler, uygulanmış gibi değil “planlanan” şeklinde sunuldu. Kullanıcı tarafından sonradan yapılan ek düzenlemeler burada ayrıca kaydedilmelidir.
-
-**Doğrulama / kalan sorumluluklar:**  
-Gerçek kullanıcı görüşmeleri yapılmalı; bilgi doğruluğu kontrol edilmeli; teknoloji seçimleri ve gereksinimler grup tarafından anlaşılmalı; öğretim elemanından konu onayı alınmalıdır.
+**Durum:** GitHub dokümantasyonu güncellendi; bu dosyalar tek başına çalışan veya canlıya alınmış uygulama değildir.
