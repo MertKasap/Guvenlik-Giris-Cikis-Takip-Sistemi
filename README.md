@@ -1,86 +1,88 @@
-# Ziyaretçi Araç Giriş Yönetim Sistemi
+# QR ve Manuel Güvenlik Giriş-Çıkış Takip Sistemi
 
-**Web Programlama Dönem Projesi | 2026–2027 Güz Dönemi**
+**Web Programlama / Web Teknolojileri Dönem Projesi — 2026–2027 Güz**
 
-> **Proje durumu:** Analiz ve planlama aşaması. Bu depo henüz çalışan bir web uygulaması içermez. Kullanıcı görüşmeleri ve proje konusu onayı tamamlandığında kapsam güncellenecektir.
+> **Durum (2 Kasım 2026):** Yeni konuya uyarlanan analiz ve gereksinim aşaması. Çalışan bir uygulama veya herkese açık canlı URL henüz doğrulanmadı. Bu depodaki daha eski commit'ler önceki "Ziyaretçi Araç Giriş Yönetimi" konusuna aittir; geçmiş silinmemiştir.
 
-## 1. Projenin Amacı
+## Problem ve hedef
 
-Ziyaretçi araçlarının kurum ve işletme girişlerinde kaydedilmesi, onaylanması, giriş-çıkış zamanlarının izlenmesi ve geçmiş kayıtlara erişilmesi için web tabanlı bir yönetim sistemi geliştirmek amaçlanmaktadır.
+Bir kurum, işletme, okul binası veya tesisin güvenlik girişinde ziyaretçilerin **ad, soyad, telefon, giriş zamanı ve çıkış zamanı** bilgilerinin tek merkezden kaydedilmesini ve takip edilmesini amaçlayan web uygulamasıdır.
 
-Bazı işletmelerde bu tür işlemler defter, Excel, telefon veya mesajlaşma araçlarıyla yürütülebilir. Projemiz, farklı araçlarda tutulan kayıtların tek bir yerde yönetilebilmesi ve ilgili personelin aynı güncel bilgiye erişebilmesi ihtiyacına odaklanır. Bu sorunların hedef kurumda gerçekten yaşandığı, görüşmelerle doğrulanmalıdır.
+Aynı kaydı oluşturmak için **iki alternatif giriş yöntemi** bulunacaktır:
+- **QR ile giriş:** Kişi giriş noktasındaki QR kodu telefonuyla okutur, açılan formda adını, soyadını ve telefonunu girerek giriş kaydını gönderir. Sistem giriş saatini sunucuda oluşturur.
+- **Manuel giriş:** Güvenlik personeli aynı üç bilgiyi kendi oturumundan kaydeder. Sistem giriş saatini oluşturur.
 
-## 2. Hedef Kullanıcılar
+**Çıkış takibi:** Görevli aktif kayıttan kişiyi seçip çıkış verir veya kişi çıkış noktasına özel QR kodunu okutarak açık girişini doğrulayıp çıkış kaydını tamamlar. Çıkış saati de sunucu tarafından kaydedilir.
 
-| Rol | Beklenen işlem |
+Sistem bir **ders yoklama uygulaması değildir**; bina/tesis güvenlik giriş-çıkış takibi içindir. QR ekranı yalnızca görsel ilhamdır.
+
+## Kullanıcı rolleri
+
+| Rol | Yetki |
 | --- | --- |
-| Güvenlik görevlisi | Araç ve ziyaretçi kaydı oluşturma, giriş/çıkış işlemi yapma, durum görüntüleme |
-| Ziyaret edilen birimdeki yetkili | Ziyaret talebini inceleme, onaylama veya reddetme |
-| Sistem yöneticisi | Kullanıcı ve yetki yönetimi, kayıt geçmişi ve raporları inceleme |
+| Güvenlik görevlisi | Giriş/çıkış kaydı, aktif ziyaretçileri görüntüleme, kayıt arama |
+| Yönetici | Güvenlik personeli yetkileri, geçmiş kayıtlara erişim, istatistik/rapor |
+| Ziyaretçi | QR bağlantısı üzerinden kendi giriş/çıkış kaydını oluşturma veya tamamlama |
 
-Roller ve yetkiler gerçek kullanıcı görüşmelerine göre yeniden düzenlenebilir.
+**Kimlik doğrulama:** Görevli/yönetici için kullanıcı kaydı ve giriş akışı geliştirilecektir. Ziyaretçiler için QR formu hızlı kayıt yoludur; kayıt formu bir personel oturumunun yerine geçmez. Bu ayrım ders sorumlusuyla teyit edilecek ve gerekiyorsa ziyaretçi hesapları eklenecektir.
 
-## 3. Planlanan İş Akışı
+## Temel iş akışları
 
-1. Yetkili bir kullanıcı ziyaret talebi oluşturur veya güvenlik görevlisi gelen aracı kaydeder.
-2. Plaka, ziyaretçi adı, ziyaret amacı, ziyaret edilecek kişi/birim ve zaman bilgisi sisteme işlenir.
-3. Gerekli ise ilgili yetkili talebi onaylar veya reddeder.
-4. Güvenlik görevlisi araç geldiğinde kaydı kontrol ederek giriş zamanını kaydeder.
-5. Araç ayrılırken çıkış kaydı tamamlanır.
-6. Yetkili kullanıcılar geçmiş kayıtları arayıp filtreleyebilir, özet raporları görüntüleyebilir.
+**QR girişi**
+1. Güvenlik noktasındaki güncel "Giriş" QR kodunu tara.
+2. Ad, soyad, telefon numarasını forma gir.
+3. Geçerli QR ve alan denetimlerinden sonra giriş kaydını oluştur.
+4. Kayıt numarası / kısa doğrulama kodunu kişiye göster.
 
-## 4. Temel Fonksiyonlar (Hedef)
+**Manuel giriş**
+1. Güvenlik görevlisi kullanıcı hesabıyla giriş yapar.
+2. Ad, soyad, telefon alanlarını doldurur.
+3. Sistem zaman damgası ile giriş kaydını kaydeder.
 
-- Kullanıcı kaydı ve oturum açma
-- Rol tabanlı erişim kontrolü
-- Ziyaretçi ve araç bilgisi kaydı
-- Ziyaret onay/red ve durum takibi
-- Araç giriş/çıkış zamanlarının kaydedilmesi
-- Tarih, plaka ve durum bazında kayıt arama/filtreleme
-- Yetkili kullanıcı için özet raporlar
+**Çıkış**
+1. Görevli açık kayıtlardan ilgili kişiyi seçer; **veya** kişi "Çıkış" QR bağlantısıyla kendi açık kaydını doğrular.
+2. Sistem girişe ait çıkış zamanını yazar; ikinci kez çıkış oluşturulamaz.
 
-## 5. Dersin Teknik Gereksinimlerine Uyum Planı
+## Planlanan temel modüller
 
-| Gereksinim | Plan |
-| --- | --- |
-| Frontend | React + Vite |
-| Backend | Node.js + Express |
-| Veritabanı | MySQL |
-| Kimlik doğrulama | Kullanıcı kaydı ve giriş işlemleri |
-| Canlı yayın | 6. hafta itibarıyla erişilebilir bir dağıtım hedefi |
+- Kayıt/giriş ve rol tabanlı yetkilendirme
+- QR giriş ve QR çıkış bağlantıları; süreli ve imzalı token kontrolü
+- Güvenlik panelinde manuel giriş ve çıkış
+- İçeride olanların listesi; ad, soyad, telefon ile arama (yetkili kullanıcı)
+- Günlük giriş-çıkış raporları, sayısal özetler ve grafik
+- Anlık kayıt güncellemesi (SSE veya WebSocket)
+- Kişisel veri erişim sınırları ve kullanıcı işlemi kayıtları
 
-Ek teknik özelliklerden **en az üçünün** uygulanması hedeflenmektedir:
+## Teknoloji ve ders gereksinimi
 
-1. **Rol tabanlı yetkilendirme:** Güvenlik / yetkili / yönetici için farklı işlemler.
-2. **Gerçek zamanlı güncelleme:** Onay ve giriş durumunu SSE veya WebSocket ile sayfa yenilenmeden göstermek.
-3. **Raporlama / grafik:** Veritabanındaki ziyaret kayıtlarından günlük ve dönemsel özetler üretmek.
+- **Frontend:** React + Vite
+- **Backend:** Node.js + Express
+- **Veritabanı:** MySQL (alternatifler onay sonrası değerlendirilebilir)
+- **Kimlik doğrulama:** Görevli ve yönetici için hesap/giriş
+- **Canlı dağıtım:** 6. hafta (10 Kasım 2026) için planlanan hedef
+- **Seçilen üç teknik özellik:** Rol tabanlı yetkilendirme, gerçek zamanlı güncelleme, raporlama/grafik
 
-Bunlar planlanan özelliklerdir; henüz geliştirilmiş veya test edilmiş değildir.
+## Durum ve teslim hedefleri
 
-## 6. Özgün Yaklaşım
+- [x] GitHub deposu var; konu yeni güvenlik giriş-çıkış sistemine çevrildi
+- [x] İlk kapsam ve gereksinim taslakları hazırlandı
+- [ ] En az üç gerçek kullanıcı görüşmesiyle problem doğrulansın
+- [ ] React/Express/MySQL uygulaması geliştirilsin ve test edilsin
+- [ ] 10 Kasım ilk çalışan proje sunumu için canlı URL sağlansın
+- [ ] 24 Kasım'da tamamlanmış uygulama için test senaryoları hazırlansın
+- [ ] Ekipteki iki kişinin de düzenli GitHub commit'i bulunsun
 
-Proje yalnızca ziyaretçi listesi tutmak yerine **talep → onay → giriş → çıkış → raporlama** sürecini birlikte ele almayı hedefler. Amaç, gerçek bir kurumun iş akışına uyarlanabilecek, yetkilere ayrılmış operasyonel bir uygulama geliştirmektir. Konunun özgünlüğü ve kapsamı görüşmeler ve ders onayıyla netleştirilecektir.
+## Belgeler
 
-## 7. Depo Dosyaları
+- [PROBLEM.md](PROBLEM.md) — Problem kartı, görüşme alanları
+- [GEREKSINIMLER.md](GEREKSINIMLER.md) — Yazılım gereksinimleri ve kabul ölçütleri
+- [AI_LOG.md](AI_LOG.md) — Yapay zekâ kullanım günlüğü
+- [.env.example](.env.example) — Gizli bilgi içermeyen örnek yapılandırma
 
-- **PROBLEM.md:** Problem kartı, görüşme şablonları, mevcut iş akışı ve çözüm önerisi.
-- **AI_LOG.md:** Yapay zekâ desteğiyle hazırlanan kısımlar ve gözden geçirilmesi gereken noktalar.
-- **.env.example:** Gerçek şifre içermeyen örnek ortam değişkenleri.
-- **.gitignore:** Gizli veya gereksiz yerel dosyaların Git'e eklenmesini engelleyen kurallar.
+## Gizlilik ve güvenlik
 
-## 8. İlk Hafta / Sonraki Adımlar
+QR kodun içinde ad, soyad veya telefon numarası taşınmaz; yalnızca kısa süreli, sunucu tarafından doğrulanan işlem bağlantısı olur. Kişisel bilgiler yalnızca yetkili kullanıcılara gösterilir. GitHub'a gerçek ziyaretçi kayıtları veya şifreler yüklenmez. Sistem yalnızca kullanıcı beyanına dayanarak kimlik doğruluğunu garanti ettiğini iddia etmez.
 
-- [x] GitHub deposunun oluşturulması
-- [x] İlk problem ve kapsam taslağının yazılması
-- [x] Temel repo dokümantasyonunun hazırlanması
-- [ ] Gerçek problemi yaşayan en az üç kişiyle görüşme yapılması
-- [ ] PROBLEM.md içindeki görüşme bilgilerinin doldurulması
-- [ ] Konunun 2. hafta sunumunda onaylanması
-- [ ] React uygulama iskeletinin oluşturulması
-- [ ] Backend ve veritabanı tasarımının başlatılması
+## Depo adının değiştirilmesi
 
-**Not:** Yönergede depo açılışı için belirtilen tarih 6 Ekim 2026'dır. GitHub'a yapılan işlemlerin gerçek tarihleri esas alınır; geç yapılmış işlem geçmiş tarihli gibi gösterilmez.
-
-## 9. Gizlilik ve Veri Güvenliği
-
-Gerçek kişilere ait telefon, plaka veya benzeri kişisel veriler izinsiz olarak herkese açık depoya eklenmeyecektir. Parolalar, API anahtarları ve veritabanı bağlantı bilgileri .env içinde tutulur; repoda sadece .env.example bulunur. Uygulama geliştirilirken yetkilendirme, gerekli minimum veri toplama ve erişim kontrolü dikkate alınacaktır.
+Önerilen ad: `Guvenlik-Giris-Cikis-Takip-Sistemi`. GitHub'da **Settings → General → Repository name → Rename** üzerinden bu adla yeniden adlandırılabilir. İçerik ve commit geçmişi korunur.

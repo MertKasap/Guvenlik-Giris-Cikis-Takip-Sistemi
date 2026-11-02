@@ -1,97 +1,76 @@
-# Problem Kartı — Ziyaretçi Araç Giriş Yönetimi
+# PROBLEM KARTI — QR ve Manuel Güvenlik Giriş-Çıkış Takip Sistemi
 
-**Durum:** Görüşmelerle doğrulanması ve ders kapsamında onaylanması gereken taslak.
+**Belge durumu:** Görüşmeler ve öğretim elemanı onayı bekleyen taslak (2 Kasım 2026)
 
-## 1. Problemi Kim Yaşıyor?
+## 1. Gerçek problem ve problemi yaşayanlar
 
-**Hedef kurum/işletme:** [Gerçek kurum ya da işletme adı — izin varsa yazılacak]
+**Problem hipotezi:** Kurum/tesis girişlerinde defter, tablo veya dağınık dijital kayıtlar kullanılması; içerideki kişi listesinin güncelliğini, giriş/çıkış saatlerinin eşleştirilmesini ve geçmiş ziyaretlerin sorgulanmasını zorlaştırabilir.
 
-**Birincil kullanıcılar:** Güvenlik personeli, ziyaret edilen birimin yetkilileri ve giriş-çıkış kayıtlarından sorumlu yöneticiler.
+**Hedef gerçek kurum:** [Kurumun adı — araştırılarak doldurulacak]
 
-**İletişim kişisi:** [Görüşme yapılacak gerçek yetkili adı / görevi / iletişim yöntemi — yalnızca paylaşım izni varsa]
+**İletişim kişisi / onay veren yetkili:** [İzinli bilgiler, görevi, iletişim yöntemi]
 
-## 2. Problemin Tanımı
+**İlgili roller:** Güvenlik görevlisi; tesis yöneticisi; ziyaretçi veya tesise giriş yapan kişi.
 
-Ziyaretçi araçlarının giriş-çıkış kayıtlarının farklı kanallarda veya manuel tutulduğu ortamlarda plaka ve ziyaret bilgilerini doğrulama, onay takibi, giriş/çıkış saatlerini eşleştirme ve geçmişi araştırma işlemleri zaman alabilir. Bilgi akışının parçalı olması güvenlik personeli ile ilgili birimler arasında iletişim gecikmelerine yol açabilir.
+Bu bölümdeki sorunlar *varsayımdır*; belirli bir kurumda doğrulanmış yaşanmış sorunlar olduğu ileri sürülmemektedir.
 
-**Önemli:** Bu paragraf, araştırılacak bir problem hipotezidir; hedef kurumun mevcut durumu olarak doğrulanmış bilgi değildir.
+## 2. İş bugün nasıl yapılıyor?
 
-## 3. İş Bugün Nasıl Yapılıyor?
+Görüşmede doğrulanacak sorular:
+- Girişte ziyaretçi bilgileri deftere mi, Excel'e mi, uygulamaya mı işleniyor?
+- İsim, soyisim, telefon ve giriş-çıkış saati gerçekten tutuluyor mu?
+- Çıkış yapmayan kayıtlar nasıl kontrol ediliyor?
+- Giriş noktasında internet / telefon erişimi var mı?
+- Bilgiler kimler tarafından görüntülenebiliyor?
 
-**Doğrulama bekleyen mevcut akış:**
-1. Ziyaret öncesinde veya kapıda bilgi güvenlik birimine ulaşır.
-2. Ziyaretçinin araç bilgisi manuel olarak kaydedilebilir.
-3. Ziyaret edilecek yetkiliden telefon/mesaj yoluyla onay alınabilir.
-4. Araç çıkışı ayrı bir kayıt üzerinden takip edilebilir.
-5. Geçmiş kayıtlar defter veya tablo içinden aranabilir.
+**Gerçek mevcut iş akışı:** [Görüşme sonucuyla doldurulacak]
 
-**Gerçek kullanımın anlatımı:** [Görüşmelerden sonra kullanılan araçlar, mevcut adımlar, sorun sıklığı ve örnek olaylar yazılacak.]
+## 3. En az üç gerçek kişiyle görüşme
 
-## 4. En Az Üç Gerçek Kullanıcı Görüşmesi
+### Görüşme 1 — Güvenlik görevlisi
+- Tarih / görev / kurum: [Doldurulacak]
+- İzinli iletişim bilgisi veya kanalı: [Doldurulacak]
+- Mevcut işlem sırası: [Gerçek yanıt]
+- Yaşanan somut sorun ve örnek: [Gerçek yanıt]
+- Öncelikli ihtiyaç: [Gerçek yanıt]
 
-> Bu bölüm öğretim elemanının talep ettiği gerçek görüşme kayıtları için hazırlanmıştır. Henüz görüşme yapıldığına dair bilgi bulunmadığı için aşağıdaki alanlar bilinçli olarak boş bırakılmıştır. İzin alınmadan kişisel iletişim bilgilerini herkese açık repoya koymayın.
+### Görüşme 2 — Yönetici / idari personel
+- Tarih / görev / kurum: [Doldurulacak]
+- İzinli iletişim bilgisi veya kanalı: [Doldurulacak]
+- Geçmiş ve raporlama ihtiyacı: [Gerçek yanıt]
+- Yaşanan somut sorun ve örnek: [Gerçek yanıt]
+- Öncelikli ihtiyaç: [Gerçek yanıt]
 
-### Görüşme 1 — Güvenlik personeli
+### Görüşme 3 — Giriş yapan kişi / ziyaretçi
+- Tarih / görev / kurum: [Doldurulacak]
+- İzinli iletişim bilgisi veya kanalı: [Doldurulacak]
+- QR kod ile kayıt hakkındaki deneyim: [Gerçek yanıt]
+- Manuel kayıt gerektiği durumlar: [Gerçek yanıt]
+- Öncelikli ihtiyaç: [Gerçek yanıt]
 
-- **Tarih:** [Doldurulacak]
-- **Kişi / görev:** [Doldurulacak]
-- **İletişim bilgisi veya izinli iletişim kanalı:** [Doldurulacak]
-- **Mevcut işleyiş:** [Gerçek yanıt]
-- **En sık yaşanan sorun:** [Gerçek yanıt]
-- **İhtiyaç / öneri:** [Gerçek yanıt]
+**Önemli:** Gerçek görüşmeler yapılmadıysa tamamlanmış gibi gösterilmeyecek. Telefon numarası vb. kişisel veriler kişinin izni olmadan herkese açık GitHub'a yazılmayacak.
 
-### Görüşme 2 — Ziyaret kabul eden birim yetkilisi
+## 4. Önerilen çözüm ve üç ana özellik
 
-- **Tarih:** [Doldurulacak]
-- **Kişi / görev:** [Doldurulacak]
-- **İletişim bilgisi veya izinli iletişim kanalı:** [Doldurulacak]
-- **Mevcut işleyiş:** [Gerçek yanıt]
-- **En sık yaşanan sorun:** [Gerçek yanıt]
-- **İhtiyaç / öneri:** [Gerçek yanıt]
+1. **İki seçenekli kayıt:** QR ile kişinin kendini kaydetmesi ya da güvenlik görevlisinin aynı ad-soyad-telefon alanlarıyla manuel kayıt yapması.
+2. **Giriş-çıkış eşleştirme:** Tekil giriş kaydı üzerinde zaman damgaları; aktif ziyaretçi listesi; görevli çıkışı veya ayrı çıkış QR'ı.
+3. **Kontrol paneli:** Güvenlik ve yönetici rolleri için erişim kuralları, arama, aktif kişi sayısı ve dönemsel raporlar.
 
-### Görüşme 3 — Yönetici / idari personel
+## 5. Seçilen teknik özellikler
 
-- **Tarih:** [Doldurulacak]
-- **Kişi / görev:** [Doldurulacak]
-- **İletişim bilgisi veya izinli iletişim kanalı:** [Doldurulacak]
-- **Mevcut işleyiş:** [Gerçek yanıt]
-- **En sık yaşanan sorun:** [Gerçek yanıt]
-- **İhtiyaç / öneri:** [Gerçek yanıt]
+Yönergede gereken **en az üç** özellik:
+- Rol tabanlı yetkilendirme
+- Gerçek zamanlı güncelleme (SSE/WebSocket)
+- Veritabanına bağlı raporlama / grafik
 
-## 5. Önerilen Çözüm
+## 6. Beklenen fayda ve özgünlük
 
-Güvenlik personeli ve yetkililerin oturum açarak kullanacağı, ziyaret talebi, onay, araç giriş-çıkış kaydı ve geçmiş sorgulama işlemlerini tek bir web uygulamasında toplayan sistem.
+Tek bir sistemde QR ve manuel yöntemler birbirinin alternatifi olarak çalışır; kayıtlar aynı veri modeline bağlanır. Güvenlik personeli, içeride bulunan kişileri ve çıkışı henüz yapılmamış kayıtları kontrol edebilir. Çözüm yalnızca bir form/listeden oluşmayacak; yetkili yönetim paneli ve işlem akışı içerecektir.
 
-### En Önemli Üç Özellik
+## 7. Doğrulanması gerekenler
 
-1. **Ziyaret ve araç kaydı:** Plaka, ziyaret nedeni, ilgili birim, tarih ve saat bilgilerinin yönetilmesi.
-2. **Onay ve giriş/çıkış takibi:** Yetkili onayı ile güvenlik giriş-çıkış işlemlerinin aynı kayıtta izlenmesi.
-3. **Yetkili geçmiş arama ve raporlama:** Kullanıcının yetkisine göre kayıt filtreleme ve özet bilgilere erişim.
-
-Bu öncelikler gerçek görüşme bulgularına göre değiştirilebilir.
-
-## 6. Seçilen Teknik Özellikler
-
-**Yönergedeki en az üç özellik koşulunu karşılamak üzere hedeflenenler:**
-
-- **Rol tabanlı yetkilendirme:** Güvenlik, birim yetkilisi, yönetici
-- **Gerçek zamanlı güncelleme:** Onay/durum değişikliği için SSE veya WebSocket
-- **Raporlama / grafik:** Ziyaret kayıtlarından tarih ve durum bazlı özetler
-
-**Temel teknoloji planı:** React (Vite), Node.js/Express, MySQL; kullanıcı kaydı/girişi ve canlı yayına alma.
-
-## 7. Özgünlük ve Kapsam
-
-Genel amaçlı bir site veya liste kopyası yerine, ziyaretçi aracının kuruma kabulünden çıkışına kadar birden çok görevlinin rol aldığı somut iş akışına odaklanılır. Gerçek kurumda süreç bu şekilde işlemiyorsa iş akışı görüşmelerden sonra uyarlanacaktır.
-
-## 8. Onay ve Görüşme Kontrol Listesi
-
-- [ ] Problemi gerçekten yaşayan bir kurum / kişi belirlendi
-- [ ] En az üç farklı gerçek kullanıcı ile görüşüldü
-- [ ] Görüşmelerin özetleri ve izinli iletişim bilgileri eklendi
-- [ ] Mevcut manuel iş akışı doğrulandı
-- [ ] En önemli üç özellik kullanıcı ihtiyacına göre revize edildi
-- [ ] Konu sunumu yapıldı
-- [ ] Öğretim elemanından onay alındı
-
-**Not:** Konu sunumundan önce bu dosyanın gerçek bulgularla güncellenmesi gerekmektedir.
+- [ ] Gerçek kurum ve problem sahibi belirlendi
+- [ ] Üç görüşme gerçekleştirildi
+- [ ] Manuel ve QR süreci hedef kurum için doğrulandı
+- [ ] Öğretim elemanından konu onayı alındı
+- [ ] Kişisel veri toplama amacı, saklama süresi ve erişim yetkileri kararlaştırıldı
