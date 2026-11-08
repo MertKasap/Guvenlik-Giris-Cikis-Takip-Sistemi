@@ -52,3 +52,8 @@
 **Ön değerlendirme:** Form alanları `autocomplete` içeriyordu fakat `name` bilgisi eksikti. Bu durum mobil tarayıcıların yerleşik otomatik doldurma özelliğini etkileyebilir; belirli bir telefonda doğrulanmış neden değildir.
 **Değişiklik:** `name`, `id`, `autoComplete`, `autoCapitalize`, `inputMode` ve `onInput` tanımları eklendi. Giriş ve çıkış API'lerine gönderilecek değerler submit sırasında `FormData` ile gerçek form alanlarından okunuyor. Kopyalama düzelmesi korunuyor.
 **Doğrulama ihtiyacı:** Chrome ve Safari'de tarayıcı otomatik doldurma önerisinin görünmesi, dokunmayla doldurma, QR giriş/çıkış ve manuel kayıt yeniden test edilmeli.
+
+## 8 Kasım 2026 — Yönetici giriş kurtarma düzeltmesi
+**Geri bildirim:** Railway Variables içindeki `ADMIN_PASSWORD` ile MySQL `users.password_hash` sütunu düz metin olarak değiştirilmiş, yönetici girişi bozulmuş.
+**Neden:** Giriş işlemi bcrypt hash doğrulaması yapar. Değişken değiştirilince mevcut kullanıcının hash değeri otomatik güncellenmez.
+**Çözüm:** `ADMIN_PASSWORD_RESET_ON_START=true` sadece yönetici e-postası eşleştiğinde yeni güçlü parolanın bcrypt özetini ilgili hesapta oluşturur. Tek seferlik kurtarma sonrasında değişken `false` yapılmalıdır. Hiçbir gerçek parola repoya eklenmemiştir.

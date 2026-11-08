@@ -54,6 +54,16 @@ export async function initDatabase() {
       await db.execute('INSERT INTO users (name,email,password_hash,role) VALUES (?,?,?,?)',
         ['İlk Yönetici', email, await bcrypt.hash(password, 12), 'admin']);
       console.log('İlk yönetici hesabı oluşturuldu.');
+    } else if (process.env.ADMIN_PASSWORD_RESET_ON_START === 'true') {
+      // Mevcut yönetici için açıkça istenen tek seferlik kurtarma. Şifre yalnızca hash olarak saklanır.
+      const [matches] = await db.execute(
+        'SELECT id FROM users WHERE email=? AND role=? LIMIT 1', [email, 'admin']);
+      if (!matches.length) {
+        throw new Error('Yönetici şifresi sıfırlanamadı: ADMIN_EMAIL mevcut admin ile eşleşmiyor.');
+      }
+      await db.execute('UPDATE users SET password_hash=? WHERE id=?',
+        [await bcrypt.hash(password, 12), matches[0].id]);
+      console.log('Yönetici parola özeti güvenle yeniden oluşturuldu.');
     }
   }
 }

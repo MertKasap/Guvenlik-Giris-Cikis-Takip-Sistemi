@@ -121,3 +121,16 @@ Giriş ekranında başlangıç yönetici e-postası ve parolası Railway Variabl
 - Yeni girişlerde çıkış kodu `XXXX-XXXX-XXXX-XXXX` biçimindedir. Önceki uzun kodlar geçerliliğini korur.
 - Türkçe cep telefonu biçimleri (`05...`, `+905...`, `905...`) normalleştirilir; eski kayıtların yazılışları da eşleştirilebilir.
 - Kodunu kaybeden ziyaretçi güvenlik görevlisinden manuel çıkış isteyebilir. Gizli kodlar veritabanında düz metin olarak saklanmaz.
+
+## Yönetici şifresi kurtarma
+
+`users.password_hash` alanına **asla düz şifre yazmayın**. Uygulama giriş kontrolünde bcrypt kullanır. `ADMIN_PASSWORD` ilk yönetici oluşturulurken kullanılır; sonradan değiştirilmesi tek başına veritabanındaki mevcut hesabı güncellemez.
+
+Yöneticinin şifresini kurtarmak için:
+1. Railway `guvenlik-web → Variables` kısmında `ADMIN_EMAIL` değerinin mevcut yöneticiye ait olduğunu doğrulayın.
+2. `ADMIN_PASSWORD` değerine en az 12 karakterli **yeni ve benzersiz** bir şifre tanımlayın.
+3. `ADMIN_PASSWORD_RESET_ON_START=true` ayarını **geçici olarak** ekleyin.
+4. Servisi yeniden başlatıp loglarda `Yönetici parola özeti güvenle yeniden oluşturuldu.` satırını doğrulayın.
+5. Değişkeni `false` yapıp yeniden dağıtın. Tekrar giriş yapmayı deneyin.
+
+Bu işlem sadece eşleşen yönetici hesabının bcrypt parola özetini yeniler, ziyaretçi kayıtlarına dokunmaz. Şifreyi GitHub'a, ekran görüntüsüne veya sohbet mesajlarına yazmayın.
