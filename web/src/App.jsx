@@ -15,12 +15,13 @@ async function api(path, method='GET', data) {
 function Logo(){return <span className="logo-icon">◈</span>;}
 function Pill({children,tone='neutral'}){return <span className={'pill '+tone}>{children}</span>;}
 const emptyPerson={firstName:'',lastName:'',phone:''};
-function PersonFields({value,setValue}){
+function PersonFields({value,setValue,exitOnly=false}){
   return <div className="person-grid">
-    <label>Ad<input required maxLength="60" autoComplete="given-name" placeholder="Ad" value={value.firstName}
+    {!exitOnly&&<><label>Ad<input required maxLength="60" autoComplete="given-name" placeholder="Ad" value={value.firstName}
       onChange={e=>setValue(v=>({...v,firstName:e.target.value}))}/></label>
     <label>Soyad<input required maxLength="60" autoComplete="family-name" placeholder="Soyad" value={value.lastName}
       onChange={e=>setValue(v=>({...v,lastName:e.target.value}))}/></label>
+    </>}
     <label className="span-2">Telefon<input required type="tel" maxLength="20" autoComplete="tel" placeholder="05xx xxx xx xx" value={value.phone}
       onChange={e=>setValue(v=>({...v,phone:e.target.value}))}/></label>
   </div>;
@@ -55,7 +56,7 @@ function PublicForm(){
     </div>:<><div className="big-symbol">{isExit?'↗':'↘'}</div>
     <h1>{isExit?'Güvenli çıkış kaydı':'Güvenli giriş kaydı'}</h1>
     <p className="muted">{isExit?'Çıkış işlemi için telefonunuzu ve girişte verilen özel kodu girin.':'İçeri giriş için ad, soyad ve telefon bilgilerinizi girin. Giriş saati otomatik kaydedilir.'}</p>
-    <form onSubmit={submit}><PersonFields value={form} setValue={setForm}/>
+    <form onSubmit={submit}><PersonFields value={form} setValue={setForm} exitOnly={isExit}/>
       {isExit&&<label className="extra-field">Girişte verilen çıkış kodu
         <input required value={receipt} onChange={e=>setReceipt(e.target.value)} placeholder="Kişisel çıkış kodu"/>
       </label>}

@@ -11,3 +11,13 @@
 **Neler kontrol edilmeli / neden?** Kişisel veri güvenliği ve QR çıkış doğrulama riskleri nedeniyle gerçek kişi bilgileri üretilmedi, görüşme alanları boş bırakıldı. Taslak özellikler bitmiş uygulama olarak sunulmadı. Öğrencilerin kodu ve gereksinimleri anlayıp test etmesi, gerçek görüşmeleri yapması ve ders onayı alması gerekiyor.
 
 **Durum:** GitHub dokümantasyonu güncellendi; bu dosyalar tek başına çalışan veya canlıya alınmış uygulama değildir.
+
+
+## 8 Kasım 2026 — İlk uygulama kaynak kodları
+**İstek:** QR ve manuel güvenlik giriş-çıkış uygulamasının geliştirilmesi, GitHub'a anlamlı commit'ler eklenmesi ve canlı yayın hazırlığı.
+
+**Üretilen:** Express/MySQL backend, QR token doğrulama, görevli/yönetici oturumu, manuel/QR kayıt, çıkış ve raporlama API'leri, React arayüzü, QR gösterim ekranı, otomatik CI test/derleme yapılandırması ve yayın dokümantasyonu.
+
+**Yapılan düzeltme:** QR çıkış formunda yeniden ad-soyad istemek yerine telefon ve kişiye verilen çıkış kodu kullanılacak şekilde arayüz güncellendi.
+
+**Kontrol edilmesi gerekenler:** Bağımlılıkların kurulması, CI sonuçları, canlı MySQL entegrasyonu, HTTPS alan adı, QR'ın gerçek telefondan okunması ve kişisel veri güvenliği. Yapılmayan kontroller yapılmış gibi beyan edilmez.

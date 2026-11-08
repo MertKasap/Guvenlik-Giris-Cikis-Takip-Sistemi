@@ -2,7 +2,7 @@
 
 **Web Programlama / Web Teknolojileri Dönem Projesi — 2026–2027 Güz**
 
-> **Durum (2 Kasım 2026):** Yeni konuya uyarlanan analiz ve gereksinim aşaması. Çalışan bir uygulama veya herkese açık canlı URL henüz doğrulanmadı. Bu depodaki daha eski commit'ler önceki "Ziyaretçi Araç Giriş Yönetimi" konusuna aittir; geçmiş silinmemiştir.
+> **Durum (8 Kasım 2026):** İlk MVP için React, Express ve MySQL kaynak kodları eklendi. Canlı yayın henüz doğrulanmadı; tam testler bekliyor.
 
 ## Problem ve hedef
 
@@ -86,3 +86,20 @@ QR kodun içinde ad, soyad veya telefon numarası taşınmaz; yalnızca kısa s�
 ## Depo adının değiştirilmesi
 
 Önerilen ad: `Guvenlik-Giris-Cikis-Takip-Sistemi`. GitHub'da **Settings → General → Repository name → Rename** üzerinden bu adla yeniden adlandırılabilir. İçerik ve commit geçmişi korunur.
+
+
+## İlk sürümü çalıştırma (8 Kasım)
+1. Node.js 20+ ve MySQL kurun.
+2. `git clone https://github.com/MertKasap/Guvenlik-Giris-Cikis-Takip-Sistemi.git`
+3. `npm install`
+4. `.env.example` dosyasını `.env` olarak kopyalayın; MySQL, güçlü gizli anahtarlar ve ilk yönetici bilgilerini ekleyin.
+5. MySQL'de `CREATE DATABASE security_entry_exit CHARACTER SET utf8mb4;` komutunu çalıştırın.
+6. Terminal 1: `npm run dev` (Express API, port 3000)
+7. Terminal 2: `npm run dev:web` (React, http://localhost:5173)
+8. Test: `npm test` | Üretim derlemesi: `npm run build`
+
+İlk yönetici, yalnızca daha önce yönetici yoksa `ADMIN_EMAIL` ve `ADMIN_PASSWORD` ile oluşturulur. Yönetici panelinden güvenlik personeli hesabı açılabilir. QR'ın telefondan açılması için `PUBLIC_BASE_URL` gerçek cihazdan erişilebilir URL olmalıdır.
+
+**Yayın:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). **Sunum kontrolü:** [docs/DEMO_CHECKLIST.md](docs/DEMO_CHECKLIST.md).
+
+Uygulama geliştirme aşamasındadır. Kaynak kodun gönderilmiş olması, MySQL ile uçtan uca testin veya canlı sitenin tamamlandığı anlamına gelmez.
