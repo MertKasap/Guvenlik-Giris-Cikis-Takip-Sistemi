@@ -16,14 +16,25 @@ function Logo(){return <span className="logo-icon">◈</span>;}
 function Pill({children,tone='neutral'}){return <span className={'pill '+tone}>{children}</span>;}
 const emptyPerson={firstName:'',lastName:'',phone:''};
 function PersonFields({value,setValue,exitOnly=false}){
+  // name + autocomplete tarayıcıya kayıtlı kişi bilgilerini önerme olanağı verir.
+  const onField = key => e => {
+    const currentValue = e.currentTarget.value;
+    setValue(v => v[key] === currentValue ? v : {...v,[key]:currentValue});
+  };
   return <div className="person-grid">
-    {!exitOnly&&<><label>Ad<input required maxLength="60" autoComplete="given-name" placeholder="Ad" value={value.firstName}
-      onChange={e=>setValue(v=>({...v,firstName:e.target.value}))}/></label>
-    <label>Soyad<input required maxLength="60" autoComplete="family-name" placeholder="Soyad" value={value.lastName}
-      onChange={e=>setValue(v=>({...v,lastName:e.target.value}))}/></label>
+    {!exitOnly&&<><label htmlFor="visitor-first-name">Ad<input
+      id="visitor-first-name" name="firstName" type="text" required maxLength="60"
+      autoComplete="given-name" autoCapitalize="words" placeholder="Ad" value={value.firstName}
+      onChange={onField('firstName')} onInput={onField('firstName')}/></label>
+    <label htmlFor="visitor-last-name">Soyad<input
+      id="visitor-last-name" name="lastName" type="text" required maxLength="60"
+      autoComplete="family-name" autoCapitalize="words" placeholder="Soyad" value={value.lastName}
+      onChange={onField('lastName')} onInput={onField('lastName')}/></label>
     </>}
-    <label className="span-2">Telefon<input required type="tel" maxLength="20" autoComplete="tel" placeholder="05xx xxx xx xx" value={value.phone}
-      onChange={e=>setValue(v=>({...v,phone:e.target.value}))}/></label>
+    <label className="span-2" htmlFor="visitor-phone">Telefon<input
+      id="visitor-phone" name="phone" type="tel" inputMode="tel" required maxLength="20"
+      autoComplete="tel" placeholder="05xx xxx xx xx" value={value.phone}
+      onChange={onField('phone')} onInput={onField('phone')}/></label>
   </div>;
 }
 function Alert({message,kind='error'}){return message?<div className={'alert '+kind}>{message}</div>:null;}
@@ -71,9 +82,15 @@ function PublicForm(){
     e.preventDefault();setError('');setBusy(true);
     try{
       if(!token)throw new Error('QR kodu bulunamadı.');
+      // Telefonun otomatik doldurması React olayını tetiklemezse gerçek form değerlerini de al.
+      const submitted = Object.fromEntries(new FormData(e.currentTarget));
       const data=isExit
-        ? await api('/visits/qr-exit','POST',{token,phone:form.phone,receiptCode:receipt.trim()})
-        : await api('/visits/qr','POST',{...form,token});
+        ? await api('/visits/qr-exit','POST',{token,phone:String(submitted.phone||''),receiptCode:String(submitted.receiptCode||'').trim()})
+        : await api('/visits/qr','POST',{
+            firstName:String(submitted.firstName||''),
+            lastName:String(submitted.lastName||''),
+            phone:String(submitted.phone||''),token
+          });
       setResult(data);
     }catch(err){setError(err.message);}finally{setBusy(false);}
   }
@@ -96,9 +113,9 @@ function PublicForm(){
     </div>:<><div className="big-symbol">{isExit?'↗':'↘'}</div>
     <h1>{isExit?'Güvenli çıkış kaydı':'Güvenli giriş kaydı'}</h1>
     <p className="muted">{isExit?'Çıkış için girişte yazdığınız telefon numarasını ve size verilen özel kodu girin. Telefonu 05... veya +905... biçiminde yazabilirsiniz.':'İçeri giriş için ad, soyad ve telefon bilgilerinizi girin. Giriş saati otomatik kaydedilir.'}</p>
-    <form onSubmit={submit}><PersonFields value={form} setValue={setForm} exitOnly={isExit}/>
+    <form onSubmit={submit} autoComplete="on"><PersonFields value={form} setValue={setForm} exitOnly={isExit}/>
       {isExit&&<label className="extra-field">Girişte verilen çıkış kodu
-        <input required value={receipt} onChange={e=>setReceipt(e.target.value)} placeholder="XXXX-XXXX-XXXX-XXXX (eski kodlar da geçerli)"/>
+        <input required name="receiptCode" autoComplete="off" value={receipt} onChange={e=>setReceipt(e.target.value)} placeholder="XXXX-XXXX-XXXX-XXXX (eski kodlar da geçerli)"/>
       </label>}
       <p className="tiny muted">Gönderdiğiniz bilgiler yalnızca yetkili güvenlik personelinin erişebildiği kayıtta tutulur.</p>
       <Alert message={error}/>
@@ -143,11 +160,16 @@ function QrStation(){
 function ManualEntry({afterAdd}){
   const [form,setForm]=useState({...emptyPerson}),[error,setError]=useState(''),[result,setResult]=useState(null),[busy,setBusy]=useState(false);
   async function submit(e){e.preventDefault();setBusy(true);setError('');
-    try{const data=await api('/visits/manual','POST',form);setResult(data);setForm({...emptyPerson});afterAdd();}
+    try{
+      const submitted=Object.fromEntries(new FormData(e.currentTarget));
+      const data=await api('/visits/manual','POST',{
+        firstName:String(submitted.firstName||''),lastName:String(submitted.lastName||''),phone:String(submitted.phone||'')
+      });
+      setResult(data);setForm({...emptyPerson});afterAdd();}
     catch(err){setError(err.message);}finally{setBusy(false);}
   }
   return <section className="section-card"><div className="section-heading"><div><h3>Manuel giriş kaydı</h3><p className="muted">Ziyaretçi QR kullanamıyorsa kayıt oluşturun.</p></div><span className="section-icon">✎</span></div>
-    <form onSubmit={submit}><PersonFields value={form} setValue={setForm}/>
+    <form onSubmit={submit} autoComplete="on"><PersonFields value={form} setValue={setForm}/>
       <p className="tiny muted">Giriş saati sunucuda otomatik kaydedilir.</p><Alert message={error}/>
       {result&&<Alert kind="success" message={'Kayıt #'+result.id+' oluşturuldu. QR çıkışı için özel kod: '+result.receiptCode}/>}
       <button disabled={busy} className="primary full">{busy?'Kaydediliyor…':'+ Giriş kaydı oluştur'}</button></form>

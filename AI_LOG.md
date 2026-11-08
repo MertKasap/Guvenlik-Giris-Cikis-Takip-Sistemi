@@ -46,3 +46,9 @@
 **İnceleme:** Railway günlüklerinde QR giriş için HTTP 201, çıkış için HTTP 409 yanıtları bulundu. Telefon ve kodun eşleşmemesi olasılığı incelendi.
 **Düzeltme:** Önceden eklenmiş mobil kopyalama düzeltmesi korundu. Yeni çıkış kodları dört gruplu 16 hex karaktere çevrildi. Girilen telefonlar normalize edildi; eski kayıtlardaki 05, 90, +90 ve 10 haneli sürümler çıkışta eşleştirilebiliyor. Eski uzun kodların hash algoritması korundu. QR kod süresi değişmedi.
 **Kontrol:** Birim testleri ve Railway dağıtımı ayrıca doğrulanacak. Kod kayıpsa hash'ten kurtarılamaz; yetkili güvenlik görevlisinin manuel çıkış yapması gerekir.
+
+## 8 Kasım 2026 — Mobil hızlı doldurma iyileştirmesi
+**Geri bildirim:** QR kayıt ve çıkış ekranlarında ad, soyad ve telefon için tarayıcıdan hızlı doldurma/öneri seçimi kullanılamadı.
+**Ön değerlendirme:** Form alanları `autocomplete` içeriyordu fakat `name` bilgisi eksikti. Bu durum mobil tarayıcıların yerleşik otomatik doldurma özelliğini etkileyebilir; belirli bir telefonda doğrulanmış neden değildir.
+**Değişiklik:** `name`, `id`, `autoComplete`, `autoCapitalize`, `inputMode` ve `onInput` tanımları eklendi. Giriş ve çıkış API'lerine gönderilecek değerler submit sırasında `FormData` ile gerçek form alanlarından okunuyor. Kopyalama düzelmesi korunuyor.
+**Doğrulama ihtiyacı:** Chrome ve Safari'de tarayıcı otomatik doldurma önerisinin görünmesi, dokunmayla doldurma, QR giriş/çıkış ve manuel kayıt yeniden test edilmeli.
