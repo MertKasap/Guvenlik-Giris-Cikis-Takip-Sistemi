@@ -2,7 +2,7 @@
 
 **Web Programlama / Web Teknolojileri Dönem Projesi — 2026–2027 Güz**
 
-> **Durum (8 Kasım 2026):** İlk MVP için React, Express ve MySQL kaynak kodları eklendi. Canlı yayın henüz doğrulanmadı; tam testler bekliyor.
+> **Durum (8 Kasım 2026):** React/Express/MySQL MVP Railway üzerinde dağıtıldı. Railway hem web hem MySQL servislerini SUCCESS olarak bildiriyor; gerçek kullanıcı akışlarının tarayıcıdan uçtan uca testi sürüyor.
 
 ## Problem ve hedef
 
@@ -67,8 +67,10 @@ Sistem bir **ders yoklama uygulaması değildir**; bina/tesis güvenlik giriş-�
 - [x] GitHub deposu var; konu yeni güvenlik giriş-çıkış sistemine çevrildi
 - [x] İlk kapsam ve gereksinim taslakları hazırlandı
 - [ ] En az üç gerçek kullanıcı görüşmesiyle problem doğrulansın
-- [ ] React/Express/MySQL uygulaması geliştirilsin ve test edilsin
-- [ ] 10 Kasım ilk çalışan proje sunumu için canlı URL sağlansın
+- [x] React/Express/MySQL MVP kaynak kodları ve birim testleri eklendi
+- [ ] Gerçek tarayıcı/telefon üzerinden uçtan uca testler tamamlanmalı
+- [x] Railway uygulama alan adı oluşturuldu ve dağıtım SUCCESS oldu
+- [ ] 10 Kasım sunumu öncesi dış ağdan gerçek QR kayıt senaryosu doğrulanmalı
 - [ ] 24 Kasım'da tamamlanmış uygulama için test senaryoları hazırlansın
 - [ ] Ekipteki iki kişinin de düzenli GitHub commit'i bulunsun
 
@@ -103,3 +105,13 @@ QR kodun içinde ad, soyad veya telefon numarası taşınmaz; yalnızca kısa s�
 **Yayın:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). **Sunum kontrolü:** [docs/DEMO_CHECKLIST.md](docs/DEMO_CHECKLIST.md).
 
 Uygulama geliştirme aşamasındadır. Kaynak kodun gönderilmiş olması, MySQL ile uçtan uca testin veya canlı sitenin tamamlandığı anlamına gelmez.
+
+## Railway ilk dağıtım (8 Kasım 2026)
+
+- **Uygulama:** https://guvenlik-web-production.up.railway.app
+- **Sağlık uç noktası:** https://guvenlik-web-production.up.railway.app/api/health
+- **Railway projesi:** https://railway.com/project/09592f43-3c63-45b3-8cd1-e7de58b41fbe
+- **GitHub Actions:** 8 Kasım test/derleme çalışması başarılı.
+- **Dağıtım:** Railway web ve MySQL servisleri SUCCESS bildirdi; halka açık HTTP isteği ve QR ile uçtan uca kullanım ayrıca doğrulanmalıdır.
+
+Giriş ekranında başlangıç yönetici e-postası ve parolası Railway Variables bölümündeki `ADMIN_EMAIL` ve `ADMIN_PASSWORD` değişkenlerinde bulunur. **Parolaları GitHub'a veya README'ye eklemeyin.** Başlangıç yöneticisi ilk veritabanı kurulumunda oluşturulduğu için yalnızca Railway'de `ADMIN_PASSWORD` değiştirmek mevcut kullanıcının şifresini değiştirmez. Üretim kullanımı öncesi yönetici parola yenileme özelliği eklenmeli, mümkünse test hesabı iptal edilmelidir.

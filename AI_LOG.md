@@ -21,3 +21,12 @@
 **Yapılan düzeltme:** QR çıkış formunda yeniden ad-soyad istemek yerine telefon ve kişiye verilen çıkış kodu kullanılacak şekilde arayüz güncellendi.
 
 **Kontrol edilmesi gerekenler:** Bağımlılıkların kurulması, CI sonuçları, canlı MySQL entegrasyonu, HTTPS alan adı, QR'ın gerçek telefondan okunması ve kişisel veri güvenliği. Yapılmayan kontroller yapılmış gibi beyan edilmez.
+
+## 8 Kasım 2026 — Railway ilk dağıtım
+**İstek:** Uygulamayı GitHub'dan Railway'e canlı yayın için taşımak.
+
+**Yapılan:** Railway'de `Guvenlik-Giris-Cikis` projesi oluşturuldu. Kalıcı diskli MySQL servisi kuruldu; `guvenlik-web` servisi GitHub `main` dalına bağlandı. Ortam değişkenleri Railway üzerinde gizli değer olarak ayarlandı; Railway alan adı üretildi.
+
+**Doğrulama:** Railway'de iki servisin dağıtım durumu SUCCESS. Sunucu logunda ilk yönetici oluşturuldu ve HTTP dinleyicisi başladı. GitHub Actions birim test/React derlemesi başarılı. Kamuya açık URL için dış ağdan uçtan uca işlevsel test bu adımda henüz doğrulanmadı.
+
+**Eksikler:** Giriş, QR ve manuel kayıt, çıkış, SSE yenileme ve yetki testleri tarayıcı/telefonla tamamlanmalı. Gerçek kişisel veri yerine izinli sahte test verisi kullanılmalı.
