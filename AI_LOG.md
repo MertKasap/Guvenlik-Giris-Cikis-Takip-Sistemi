@@ -30,3 +30,13 @@
 **Doğrulama:** Railway'de iki servisin dağıtım durumu SUCCESS. Sunucu logunda ilk yönetici oluşturuldu ve HTTP dinleyicisi başladı. GitHub Actions birim test/React derlemesi başarılı. Kamuya açık URL için dış ağdan uçtan uca işlevsel test bu adımda henüz doğrulanmadı.
 
 **Eksikler:** Giriş, QR ve manuel kayıt, çıkış, SSE yenileme ve yetki testleri tarayıcı/telefonla tamamlanmalı. Gerçek kişisel veri yerine izinli sahte test verisi kullanılmalı.
+
+## 8 Kasım 2026 — QR çıkış kodu kopyalama hatası düzeltmesi
+
+**Geri bildirim:** QR ile oluşturulan giriş kaydının çıkış kodu, ekrandaki "Kodu kopyala" butonu kullanıldığında eşleşmedi; kullanıcı kodu kendisi seçip kopyalayınca çıkış başarılı oldu. Railway HTTP günlüklerinde QR çıkış denemeleri 409 ile dönmüştü.
+
+**Değişiklik:** Panoya kopyalama artık `await` ile sonuç kontrolü yapıyor. Kopyalama izni olmayan tarayıcılarda yedek yöntem deneniyor; başarı ve başarısızlık kullanıcıya bildiriliyor. Çıkış kodu salt-okunur, tıklayınca tamamı seçilen bir alanda gösteriliyor.
+
+**Neden:** Önceki sürümde `navigator.clipboard?.writeText(...)` çağrısının başarısızlığı sessizce göz ardı ediliyordu.
+
+**Kapsam:** Sunucudaki QR doğrulama, veritabanı ve kayıt eşleştirme algoritması değiştirilmedi. Gerçek cihazda butonun davranışı ayrıca doğrulanmalıdır.

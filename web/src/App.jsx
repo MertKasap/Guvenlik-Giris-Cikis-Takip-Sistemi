@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
 async function api(path, method='GET', data) {
@@ -36,6 +36,37 @@ function PublicForm(){
   const [result,setResult]=useState(null);
   const [error,setError]=useState('');
   const [busy,setBusy]=useState(false);
+  const [copyState,setCopyState]=useState('');
+  const receiptFieldRef=useRef(null);
+  async function copyReceiptCode(){
+    const value=result?.receiptCode;
+    if(!value)return;
+    setCopyState('');
+    try{
+      if(navigator.clipboard?.writeText && window.isSecureContext){
+        await navigator.clipboard.writeText(value);
+        setCopyState('success');
+        return;
+      }
+    }catch{
+      // Bazı mobil tarayıcılar panoya erişimi engelleyebilir; ikinci yöntemi deneyelim.
+    }
+    const field=receiptFieldRef.current;
+    if(field){
+      field.focus();
+      field.select();
+      field.setSelectionRange(0,value.length);
+      try{
+        if(document.execCommand('copy')){
+          setCopyState('success');
+          return;
+        }
+      }catch{
+        // Kullanıcı kod alanından elle kopyalayabilir.
+      }
+    }
+    setCopyState('manual');
+  }
   async function submit(e){
     e.preventDefault();setError('');setBusy(true);
     try{
@@ -50,8 +81,17 @@ function PublicForm(){
     <header className="public-header"><Logo/><span>Güvenlik Giriş-Çıkış</span><Pill tone="info">QR İşlemi</Pill></header>
     {result?<div className="success-view"><div className="success-icon">✓</div><h1>{isExit?'Çıkış tamamlandı':'Giriş kaydı oluşturuldu'}</h1>
       <p>{isExit?'Çıkış zamanınız sisteme işlendi.':'Girişiniz kaydedildi. Çıkış işlemi için aşağıdaki özel kodu saklayın.'}</p>
-      {!isExit&&<div className="receipt"><small>Kişisel çıkış kodunuz</small><strong>{result.receiptCode}</strong>
-        <button type="button" className="secondary" onClick={()=>navigator.clipboard?.writeText(result.receiptCode)}>Kodu kopyala</button></div>}
+      {!isExit&&<div className="receipt"><small>Kişisel çıkış kodunuz</small>
+        <input ref={receiptFieldRef} className="receipt-code" type="text" readOnly
+          aria-label="Kişisel çıkış kodu" autoComplete="off" spellCheck={false} value={result.receiptCode}
+          onFocus={e=>e.currentTarget.select()} onClick={e=>e.currentTarget.select()}/>
+        <button type="button" className="secondary" onClick={copyReceiptCode}>
+          {copyState==='success'?'✓ Kopyalandı':'Kodu kopyala'}</button>
+        <div className={'copy-hint '+(copyState==='manual'?'copy-warning':'')} role="status" aria-live="polite">
+          {copyState==='success'?'Kod panoya kopyalandı. Çıkış ekranına yapıştırabilirsiniz.'
+            :copyState==='manual'?'Tarayıcı kopyalamaya izin vermedi. Yukarıdaki kod alanına dokunup Kopyala seçeneğini kullanın.'
+            :'Kodu saklayın. Çıkış yaparken bu kod ve telefon numaranız gerekecek.'}
+        </div></div>}
       <p className="muted tiny">Bu sayfada başka kişilerin kayıtları görüntülenmez.</p>
     </div>:<><div className="big-symbol">{isExit?'↗':'↘'}</div>
     <h1>{isExit?'Güvenli çıkış kaydı':'Güvenli giriş kaydı'}</h1>

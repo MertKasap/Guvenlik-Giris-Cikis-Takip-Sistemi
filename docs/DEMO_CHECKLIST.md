@@ -16,3 +16,9 @@
 - [ ] Konu onayı ve gerçek kullanıcı görüşmeleri tamamlandı.
 
 **Sunum akışı:** Giriş → QR tara → yeni kayıt → panel → manuel kayıt → çıkış → rapor. Her madde gerçekten çalıştırılarak doğrulanmadan tamamlandı olarak işaretlenmemelidir.
+
+## Mobil panoya kopyalama doğrulaması
+- [ ] Android Chrome: Girişten sonra **Kodu kopyala** → “✓ Kopyalandı” → QR çıkışında yapıştır → başarı
+- [ ] iPhone Safari: Aynı işlem ve başarı geri bildirimi kontrol edildi
+- [ ] Panoya erişim engellendiğinde manuel seçim uyarısı görüntülendi
+- [ ] Kopyala butonuna basmak yeni ziyaret kaydı oluşturmuyor
