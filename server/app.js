@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { db } from './db.js';
-import { cleanPerson, issueQrToken, validateQrToken, receiptCode, receiptHash } from './core.js';
+import { cleanPerson, phoneLookupVariants, issueQrToken, validateQrToken, receiptCode, receiptHash } from './core.js';
 const app=express();
 app.set('trust proxy',1);
 app.disable('x-powered-by');
@@ -118,10 +118,18 @@ app.patch('/api/visits/:id/exit',auth,wrap(async(req,res)=>{
 }));
 app.post('/api/visits/qr-exit',qrLimit,wrap(async(req,res)=>{
   if(!validateQrToken(req.body?.token,'exit')) throw error('QR kod geçersiz veya süresi dolmuş.',403);
-  const phone=String(req.body?.phone||'').replace(/[^\d+]/g,''),code=String(req.body?.receiptCode||'');
-  if(!/^\+?\d{10,15}$/.test(phone)||code.length<18||code.length>80) throw error('Telefon veya çıkış kodunu kontrol edin.');
-  const [r]=await db.execute('UPDATE visits SET exit_at=NOW() WHERE receipt_hash=? AND phone=? AND exit_at IS NULL',[receiptHash(code),phone]);
-  if(!r.affectedRows) throw error('Açık kayıt bulunamadı veya çıkış zaten yapılmış.',409);
+  const code=String(req.body?.receiptCode||'').trim();
+  const numbers=phoneLookupVariants(req.body?.phone);
+  if(code.length<16||code.length>80) throw error('Çıkış kodunu kontrol edin.');
+  const placeholders=numbers.map(()=>'?').join(',');
+  const [r]=await db.execute(
+    `UPDATE visits SET exit_at=NOW() WHERE receipt_hash=? AND phone IN (${placeholders}) AND exit_at IS NULL`,
+    [receiptHash(code), ...numbers]
+  );
+  if(!r.affectedRows) throw error(
+    'Telefon ve çıkış kodu eşleşmedi veya kayıt daha önce kapatıldı. Girişte verilen kodu kontrol edin; kod kayıpsa güvenlik görevlisine başvurun.',
+    409
+  );
   changed();res.json({ok:true});
 }));
 app.get('/api/reports/summary',auth,wrap(async(req,res)=>{

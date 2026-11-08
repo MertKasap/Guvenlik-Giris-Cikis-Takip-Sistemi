@@ -115,3 +115,9 @@ Uygulama geliştirme aşamasındadır. Kaynak kodun gönderilmiş olması, MySQL
 - **Dağıtım:** Railway web ve MySQL servisleri SUCCESS bildirdi; halka açık HTTP isteği ve QR ile uçtan uca kullanım ayrıca doğrulanmalıdır.
 
 Giriş ekranında başlangıç yönetici e-postası ve parolası Railway Variables bölümündeki `ADMIN_EMAIL` ve `ADMIN_PASSWORD` değişkenlerinde bulunur. **Parolaları GitHub'a veya README'ye eklemeyin.** Başlangıç yöneticisi ilk veritabanı kurulumunda oluşturulduğu için yalnızca Railway'de `ADMIN_PASSWORD` değiştirmek mevcut kullanıcının şifresini değiştirmez. Üretim kullanımı öncesi yönetici parola yenileme özelliği eklenmeli, mümkünse test hesabı iptal edilmelidir.
+
+## QR çıkış ve kopyalama (8 Kasım 2026)
+- Mobil tarayıcıda özel kodun kopyalanması artık başarı/hata mesajıyla gösterilir. Engellenirse kod seçilerek elle kopyalanabilir.
+- Yeni girişlerde çıkış kodu `XXXX-XXXX-XXXX-XXXX` biçimindedir. Önceki uzun kodlar geçerliliğini korur.
+- Türkçe cep telefonu biçimleri (`05...`, `+905...`, `905...`) normalleştirilir; eski kayıtların yazılışları da eşleştirilebilir.
+- Kodunu kaybeden ziyaretçi güvenlik görevlisinden manuel çıkış isteyebilir. Gizli kodlar veritabanında düz metin olarak saklanmaz.

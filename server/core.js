@@ -1,9 +1,32 @@
 import crypto from 'node:crypto';
 
+export function normalizePhone(input) {
+  const raw = String(input ?? '').trim().replace(/[^\d+]/g, '');
+  const digits = raw.replace(/^\+/, '');
+  let local = null;
+  if (/^5\d{9}$/.test(digits)) local = digits;
+  if (/^05\d{9}$/.test(digits)) local = digits.slice(1);
+  if (/^905\d{9}$/.test(digits)) local = digits.slice(2);
+  if (/^00905\d{9}$/.test(digits)) local = digits.slice(4);
+  if (local) return '+90' + local;
+  if (!/^\+?\d{10,15}$/.test(raw)) {
+    throw Object.assign(new Error('Telefon 10-15 rakam içermelidir.'), { status: 400 });
+  }
+  return raw;
+}
+
+// Old visits may contain any previously accepted phone-number format.
+export function phoneLookupVariants(input) {
+  const normalized = normalizePhone(input);
+  if (!/^\+905\d{9}$/.test(normalized)) return [normalized];
+  const local = normalized.slice(3);
+  return [normalized, '0' + local, '90' + local, local, '0090' + local];
+}
+
 export function cleanPerson(input = {}) {
   const firstName = String(input.firstName ?? '').trim().replace(/\s+/g, ' ');
   const lastName = String(input.lastName ?? '').trim().replace(/\s+/g, ' ');
-  const phone = String(input.phone ?? '').replace(/[^\d+]/g, '');
+  const phone = normalizePhone(input.phone);
   if (!/^[\p{L} '-]{2,60}$/u.test(firstName) || !/^[\p{L} '-]{2,60}$/u.test(lastName)) {
     throw Object.assign(new Error('Ad ve soyad 2-60 geçerli karakter içermelidir.'), { status: 400 });
   }
@@ -42,8 +65,15 @@ export function validateQrToken(token, purpose, now = Date.now()) {
   } catch { return false; }
 }
 export function receiptCode() {
-  return crypto.randomBytes(18).toString('base64url');
+  // 64 bits of randomness, formatted to make typing and copying easier.
+  const chars = crypto.randomBytes(8).toString('hex').toUpperCase();
+  return chars.match(/.{4}/g).join('-');
 }
 export function receiptHash(code) {
-  return crypto.createHash('sha256').update(String(code)).digest('hex');
+  const value = String(code ?? '').trim();
+  // New hex codes are case-insensitive and may omit the hyphens.
+  // Legacy base64url codes remain case-sensitive and valid.
+  const normalized = /^(?:[0-9a-f]{4}-){3}[0-9a-f]{4}$/i.test(value) || /^[0-9a-f]{16}$/i.test(value)
+    ? value.replace(/-/g, '').toUpperCase() : value;
+  return crypto.createHash('sha256').update(normalized).digest('hex');
 }

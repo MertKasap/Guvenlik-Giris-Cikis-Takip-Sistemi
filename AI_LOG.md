@@ -40,3 +40,9 @@
 **Neden:** Önceki sürümde `navigator.clipboard?.writeText(...)` çağrısının başarısızlığı sessizce göz ardı ediliyordu.
 
 **Kapsam:** Sunucudaki QR doğrulama, veritabanı ve kayıt eşleştirme algoritması değiştirilmedi. Gerçek cihazda butonun davranışı ayrıca doğrulanmalıdır.
+
+## 8 Kasım 2026 — QR çıkış kaydı eşleştirme iyileştirmesi
+**İstek:** QR girişten sonra özel kodun kopyalanmasında güçlük ve QR çıkışta 409 hatası.
+**İnceleme:** Railway günlüklerinde QR giriş için HTTP 201, çıkış için HTTP 409 yanıtları bulundu. Telefon ve kodun eşleşmemesi olasılığı incelendi.
+**Düzeltme:** Önceden eklenmiş mobil kopyalama düzeltmesi korundu. Yeni çıkış kodları dört gruplu 16 hex karaktere çevrildi. Girilen telefonlar normalize edildi; eski kayıtlardaki 05, 90, +90 ve 10 haneli sürümler çıkışta eşleştirilebiliyor. Eski uzun kodların hash algoritması korundu. QR kod süresi değişmedi.
+**Kontrol:** Birim testleri ve Railway dağıtımı ayrıca doğrulanacak. Kod kayıpsa hash'ten kurtarılamaz; yetkili güvenlik görevlisinin manuel çıkış yapması gerekir.

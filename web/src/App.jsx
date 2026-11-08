@@ -95,10 +95,10 @@ function PublicForm(){
       <p className="muted tiny">Bu sayfada başka kişilerin kayıtları görüntülenmez.</p>
     </div>:<><div className="big-symbol">{isExit?'↗':'↘'}</div>
     <h1>{isExit?'Güvenli çıkış kaydı':'Güvenli giriş kaydı'}</h1>
-    <p className="muted">{isExit?'Çıkış işlemi için telefonunuzu ve girişte verilen özel kodu girin.':'İçeri giriş için ad, soyad ve telefon bilgilerinizi girin. Giriş saati otomatik kaydedilir.'}</p>
+    <p className="muted">{isExit?'Çıkış için girişte yazdığınız telefon numarasını ve size verilen özel kodu girin. Telefonu 05... veya +905... biçiminde yazabilirsiniz.':'İçeri giriş için ad, soyad ve telefon bilgilerinizi girin. Giriş saati otomatik kaydedilir.'}</p>
     <form onSubmit={submit}><PersonFields value={form} setValue={setForm} exitOnly={isExit}/>
       {isExit&&<label className="extra-field">Girişte verilen çıkış kodu
-        <input required value={receipt} onChange={e=>setReceipt(e.target.value)} placeholder="Kişisel çıkış kodu"/>
+        <input required value={receipt} onChange={e=>setReceipt(e.target.value)} placeholder="XXXX-XXXX-XXXX-XXXX (eski kodlar da geçerli)"/>
       </label>}
       <p className="tiny muted">Gönderdiğiniz bilgiler yalnızca yetkili güvenlik personelinin erişebildiği kayıtta tutulur.</p>
       <Alert message={error}/>
