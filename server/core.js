@@ -80,6 +80,6 @@ export function receiptHash(code) {
 
 export function csvCell(input) {
   let value=String(input ?? '');
-  if (/^[\\s]*[=+\\-@]/.test(value)) value="'"+value;
+  if (/^\s*[=+@-]/.test(value)) value="'"+value;
   return '"'+value.replace(/"/g,'""')+'"';
 }
