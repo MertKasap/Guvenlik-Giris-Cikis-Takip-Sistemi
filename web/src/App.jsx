@@ -350,7 +350,7 @@ function Dashboard({user,onLogout}){
           <div className={'stat-card '+style} key={label}><span>{label}</span><strong>{count}</strong><small>Güncel veritabanı bilgisi</small></div>)}</div>
         <section className="section-card table-section"><div className="section-heading"><div><h3>{user.role==='admin'?'Tüm ziyaretçi geçmişi':'Ziyaret kayıtları'}</h3><p className="muted">Girişler, çıkışlar ve kayıt yöntemlerini takip edin.</p></div></div>
           <div className="filters"><input aria-label="Kayıt ara" placeholder="Ad, soyad veya telefon ile ara…" value={query} onChange={e=>setQuery(e.target.value)}/>
-            <label className="check"><input type="checkbox" checked={activeOnly} onChange={e=>setActiveOnly(e.target.checked)}/> Yalnızca içeridekiler</label>
+            {user.role==='admin'&&<label className="check"><input type="checkbox" checked={activeOnly} onChange={e=>setActiveOnly(e.target.checked)}/> Yalnızca içeridekiler</label>}
             <span className="history-count">{total} kayıt</span></div>
           <div className="table-wrap"><table><thead><tr><th>KİŞİ</th><th>TELEFON</th><th>GİRİŞ</th><th>ÇIKIŞ</th><th>YÖNTEM</th><th>DURUM / İŞLEM</th></tr></thead>
             <tbody>{visits.length?visits.map(v=><tr key={v.id}><td><b>{v.firstName} {v.lastName}</b><small>#{v.id}</small></td>
