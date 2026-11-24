@@ -128,7 +128,7 @@ app.post('/api/visits/qr',qrLimit,wrap(async(req,res)=>{
 }));
 app.get('/api/visits',auth,wrap(async(req,res)=>{
   const where=[],params=[];
-  if(req.query.active==='1') where.push('exit_at IS NULL');
+  if(req.user.role!=='admin'||req.query.active==='1') where.push('exit_at IS NULL');
   const q=String(req.query.q||'').trim().slice(0,80);
   if(q) {where.push('(first_name LIKE ? OR last_name LIKE ? OR phone LIKE ?)');params.push(...Array(3).fill(`%${q}%`));}
   const page=Math.max(1,Math.min(100000,Number.parseInt(req.query.page,10)||1));
