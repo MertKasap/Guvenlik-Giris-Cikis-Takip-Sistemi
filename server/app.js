@@ -195,9 +195,11 @@ function sendCsv(res,filename,headers,rows){
   res.setHeader('Content-Disposition',`attachment; filename="${filename}"`);
   res.send('\uFEFF'+content);
 }
-app.get('/api/export/visits.csv',auth,onlyAdmin,wrap(async(req,res)=>{
+app.get('/api/export/visits.csv',auth,wrap(async(req,res)=>{
   const {from,to}=readDateRange(req.query);
   const where=[],params=[];
+  // Güvenlik görevlileri yalnızca hâlen içeride olan ziyaretçilerin kayıtlarını dışa aktarabilir.
+  if(req.user.role!=='admin') where.push('exit_at IS NULL');
   if(from){where.push('entry_at >= ?');params.push(from+' 00:00:00');}
   if(to){where.push('entry_at < DATE_ADD(?, INTERVAL 1 DAY)');params.push(to);}
   const [rows]=await db.execute(
@@ -251,7 +253,7 @@ app.get('/api/audit-logs',auth,onlyAdmin,wrap(async(req,res)=>{
   );
   res.json({logs,total:Number(counts[0].total||0),page,limit});
 }));
-app.get('/api/reports/range',auth,onlyAdmin,wrap(async(req,res)=>{
+app.get('/api/reports/range',auth,wrap(async(req,res)=>{
   const {from,to}=readDateRange(req.query,true);
   const [summaryRows]=await db.execute(
     `SELECT
