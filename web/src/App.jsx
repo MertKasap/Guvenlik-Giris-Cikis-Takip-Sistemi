@@ -187,15 +187,144 @@ function StaffForm(){
       <label>Yetki<select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}><option value="guard">Güvenlik görevlisi</option><option value="admin">Yönetici</option></select></label>
       <Alert message={error}/><Alert message={message} kind="success"/><button className="primary">Hesap oluştur</button></form></section>;
 }
+function StaffForm(){
+  const [form,setForm]=useState({name:'',email:'',password:'',role:'guard'}),[message,setMessage]=useState(''),[error,setError]=useState('');
+  const [staff,setStaff]=useState([]),[resetPasswords,setResetPasswords]=useState({}),[resetMessages,setResetMessages]=useState({}),[busyId,setBusyId]=useState(null);
+  const loadStaff=useCallback(async()=>{try{const r=await api('/staff');setStaff(r.staff||[]);}catch(e){setError(e.message);}},[]);
+  useEffect(()=>{loadStaff();},[loadStaff]);
+  async function submit(e){e.preventDefault();setError('');setMessage('');
+    try{await api('/staff','POST',form);setMessage('Personel hesabı oluşturuldu.');setForm({name:'',email:'',password:'',role:'guard'});await loadStaff();}
+    catch(e){setError(e.message);}}
+  async function resetPassword(person){
+    const password=resetPasswords[person.id]||'';
+    if(password.length<12){setResetMessages(v=>({...v,[person.id]:'Şifre en az 12 karakter olmalıdır.'}));return;}
+    if(!confirm(person.name+' adlı görevlinin şifresi sıfırlansın mı?'))return;
+    setBusyId(person.id);setResetMessages(v=>({...v,[person.id]:''}));
+    try{await api('/staff/'+person.id+'/password','PATCH',{password});setResetPasswords(v=>({...v,[person.id]:''}));
+      setResetMessages(v=>({...v,[person.id]:'Şifre güncellendi. Görevlinin açık oturumları kapatıldı.'}));}
+    catch(e){setResetMessages(v=>({...v,[person.id]:e.message}));}
+    finally{setBusyId(null);}
+  }
+  return <div className="staff-manager">
+    <section className="section-card"><div className="section-heading"><div><h3>Personel hesabı oluştur</h3><p className="muted">Yeni güvenlik görevlisi hesabı ekleyin.</p></div></div>
+      <form onSubmit={submit} className="staff-form"><label>Ad Soyad<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label>
+        <label>E-posta<input required type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label>
+        <label>İlk şifre (en az 12 karakter)<input required type="password" minLength="12" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/></label>
+        <label>Yetki<select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}><option value="guard">Güvenlik görevlisi</option><option value="admin">Yönetici</option></select></label>
+        <Alert message={error}/><Alert message={message} kind="success"/><button className="primary">Hesap oluştur</button></form>
+    </section>
+    <section className="section-card staff-list-card"><div className="section-heading"><div><h3>Güvenlik görevlileri</h3><p className="muted">Yönetici yeni şifre belirleyebilir; eski açık oturumlar geçersiz kılınır.</p></div><button className="secondary" type="button" onClick={loadStaff}>↻ Yenile</button></div>
+      {staff.length?staff.map(person=><div className="staff-row" key={person.id}>
+        <div className="staff-person"><strong>{person.name}</strong><small>{person.email}</small></div>
+        <div className="staff-reset"><input type="password" minLength="12" autoComplete="new-password" aria-label={person.name+' için yeni şifre'}
+          placeholder="Yeni şifre (en az 12 karakter)" value={resetPasswords[person.id]||''}
+          onChange={e=>setResetPasswords(v=>({...v,[person.id]:e.target.value}))}/>
+          <button type="button" className="secondary" disabled={busyId===person.id} onClick={()=>resetPassword(person)}>
+            {busyId===person.id?'Güncelleniyor…':'Şifreyi sıfırla'}</button>
+          {resetMessages[person.id]&&<small className={resetMessages[person.id].includes('güncellendi')?'reset-success':'reset-error'}>{resetMessages[person.id]}</small>}
+        </div>
+      </div>):<p className="empty-state">Henüz güvenlik görevlisi hesabı oluşturulmamış.</p>}
+    </section>
+  </div>;
+}
+function localDate(offset=0){
+  const date=new Date();date.setDate(date.getDate()+offset);
+  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+function dateLabel(value){
+  if(!value)return '—';
+  const [y,m,d]=String(value).slice(0,10).split('-');
+  return new Date(Number(y),Number(m)-1,Number(d),12).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
+}
+function Reports(){
+  const [from,setFrom]=useState(()=>localDate(-13)),[to,setTo]=useState(()=>localDate(0));
+  const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+  const load=useCallback(async()=>{
+    if(!from||!to)return;
+    setBusy(true);setError('');
+    try{setData(await api('/reports/range?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)));}
+    catch(e){setError(e.message);setData(null);}
+    finally{setBusy(false);}
+  },[from,to]);
+  useEffect(()=>{load();},[load]);
+  const chartDays=(()=>{
+    if(!from||!to||from>to)return [];
+    const result=[],start=new Date(from+'T12:00:00'),end=new Date(to+'T12:00:00');
+    const byDay=new Map((data?.days||[]).map(d=>[String(d.day).slice(0,10),d]));
+    for(const date=new Date(start);date<=end&&result.length<367;date.setDate(date.getDate()+1)){
+      const key=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+      const item=byDay.get(key)||{};
+      result.push({day:key,entries:Number(item.entries||0),exits:Number(item.exits||0)});
+    }
+    return result;
+  })();
+  const max=Math.max(1,...chartDays.flatMap(d=>[d.entries,d.exits]));
+  const summary=data?.summary||{};
+  return <div className="reports-page">
+    <section className="section-card report-filter"><div><h3>Rapor tarih aralığı</h3><p className="muted">Giriş ve çıkış sayılarını seçtiğiniz dönem için inceleyin.</p></div>
+      <div className="report-date-fields"><label>Başlangıç<input type="date" value={from} max={to||undefined} onChange={e=>setFrom(e.target.value)}/></label>
+        <label>Bitiş<input type="date" value={to} min={from||undefined} onChange={e=>setTo(e.target.value)}/></label>
+        <button className="primary" disabled={busy||!from||!to||from>to} onClick={load}>{busy?'Hesaplanıyor…':'Raporu getir'}</button></div>
+      <Alert message={error}/>
+    </section>
+    {data&&<><div className="report-stat-grid">
+      {[['Toplam giriş',summary.entries,'blue'],['Toplam çıkış',summary.exits,'green'],['QR ile giriş',summary.qr,'purple'],['Manuel giriş',summary.manual,'orange'],['Şu an içeride',summary.activeNow,'dark']].map(([label,value,tone])=>
+        <div className={'report-stat '+tone} key={label}><span>{label}</span><strong>{Number(value||0).toLocaleString('tr-TR')}</strong></div>)}
+    </div>
+    <section className="section-card chart-card"><div className="section-heading"><div><h3>Günlük giriş ve çıkış grafiği</h3><p className="muted">{dateLabel(from)} – {dateLabel(to)} dönemindeki hareketler</p></div></div>
+      <div className="chart-legend"><span><i className="legend-entry"/> Giriş</span><span><i className="legend-exit"/> Çıkış</span></div>
+      {chartDays.length?<div className="bar-chart" role="img" aria-label="Günlere göre giriş ve çıkış sayıları">
+        {chartDays.map(day=><div className="chart-column" key={day.day} title={day.day+': '+day.entries+' giriş, '+day.exits+' çıkış'}>
+          <div className="chart-bars"><span className="chart-bar entry-bar" style={{height:(day.entries?Math.max(3,day.entries/max*100):0)+'%'}}/>
+            <span className="chart-bar exit-bar" style={{height:(day.exits?Math.max(3,day.exits/max*100):0)+'%'}}/></div>
+          <small>{dateLabel(day.day)}</small></div>)}
+      </div>:<p className="empty-state">Bu tarih aralığında gösterilecek hareket yok.</p>}
+    </section></>}
+  </div>;
+}
+function AuditLogs(){
+  const [from,setFrom]=useState(()=>localDate(-29)),[to,setTo]=useState(()=>localDate(0));
+  const [page,setPage]=useState(1),[data,setData]=useState({logs:[],total:0}),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+  const load=useCallback(async()=>{
+    setBusy(true);setError('');
+    try{const r=await api('/audit-logs?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)+'&page='+page);setData(r);}
+    catch(e){setError(e.message);}
+    finally{setBusy(false);}
+  },[from,to,page]);
+  useEffect(()=>{setPage(1);},[from,to]);
+  useEffect(()=>{load();},[load]);
+  const actionName={entry:'Giriş kaydı',exit:'Çıkış kaydı',staff_create:'Personel hesabı oluşturma',password_reset:'Personel şifresi sıfırlama'};
+  const pageCount=Math.max(1,Math.ceil(data.total/50));
+  return <section className="section-card audit-card"><div className="section-heading"><div><h3>İşlem geçmişi</h3><p className="muted">Ziyaretçi ve yönetici işlemleri; işlemi yapan kişi ve zaman bilgisiyle listelenir.</p></div>
+      <button className="secondary" type="button" disabled={busy} onClick={load}>↻ Yenile</button></div>
+    <div className="audit-filters"><label>Başlangıç<input type="date" value={from} max={to||undefined} onChange={e=>setFrom(e.target.value)}/></label>
+      <label>Bitiş<input type="date" value={to} min={from||undefined} onChange={e=>setTo(e.target.value)}/></label></div>
+    <Alert message={error}/>
+    <div className="table-wrap"><table><thead><tr><th>TARİH</th><th>İŞLEMİ YAPAN</th><th>İŞLEM</th><th>İLGİLİ KAYIT</th><th>AÇIKLAMA</th></tr></thead>
+      <tbody>{data.logs.length?data.logs.map(log=><tr key={log.id}><td><DateCell value={log.createdAt}/></td>
+        <td><b>{log.actorName}</b><small>{log.actorRole==='admin'?'Yönetici':log.actorRole==='guard'?'Güvenlik görevlisi':'QR ziyaretçisi'}</small></td>
+        <td><Pill tone={log.action==='password_reset'?'info':'neutral'}>{actionName[log.action]||log.action}</Pill></td>
+        <td>{log.visitorName||log.targetUserName||(log.visitId?'Kayıt #'+log.visitId:'—')}</td><td>{log.details||'—'}</td></tr>):
+        <tr><td colSpan="5" className="empty-state">{busy?'Kayıtlar yükleniyor…':'Bu tarih aralığında işlem bulunamadı.'}</td></tr>}</tbody></table></div>
+    <div className="pagination"><span>{data.total} işlem · Sayfa {page}/{pageCount}</span>
+      <div><button className="secondary" disabled={page<=1||busy} onClick={()=>setPage(v=>v-1)}>Önceki</button>
+        <button className="secondary" disabled={page>=pageCount||busy} onClick={()=>setPage(v=>v+1)}>Sonraki</button></div></div>
+  </section>;
+}
 function Dashboard({user,onLogout}){
   const [tab,setTab]=useState('overview'),[visits,setVisits]=useState([]),[summary,setSummary]=useState({}),[query,setQuery]=useState(''),
-    [activeOnly,setActiveOnly]=useState(true),[notice,setNotice]=useState(''),[failure,setFailure]=useState(''),[busy,setBusy]=useState(false);
+    [activeOnly,setActiveOnly]=useState(user.role!=='admin'),[page,setPage]=useState(1),[total,setTotal]=useState(0),
+    [notice,setNotice]=useState(''),[failure,setFailure]=useState(''),[busy,setBusy]=useState(false);
   const load=useCallback(async()=>{
     try{
-      const [a,b]=await Promise.all([api('/visits?active='+(activeOnly?'1':'0')+'&q='+encodeURIComponent(query)),api('/reports/summary')]);
-      setVisits(a.visits);setSummary(b);setFailure('');
+      const [a,b]=await Promise.all([
+        api('/visits?active='+(activeOnly?'1':'0')+'&q='+encodeURIComponent(query)+'&page='+page+'&limit=50'),
+        api('/reports/summary')
+      ]);
+      setVisits(a.visits);setTotal(a.total);setSummary(b);setFailure('');
     }catch(e){setFailure(e.message);}
-  },[query,activeOnly]);
+  },[query,activeOnly,page]);
+  useEffect(()=>{setPage(1);},[query,activeOnly]);
   useEffect(()=>{load();},[load]);
   useEffect(()=>{
     const events=new EventSource('/api/events');
@@ -208,34 +337,42 @@ function Dashboard({user,onLogout}){
     catch(e){setFailure(e.message);}finally{setBusy(false);}}
   async function logout(){await api('/auth/logout','POST').catch(()=>{});onLogout();}
   const fmt=x=>Number(x||0).toLocaleString('tr-TR');
+  const labels={overview:'Genel bakış',visits:'Ziyaret kayıtları',entry:'Manuel kayıt',qr:'QR kod noktası',reports:'Raporlar',audit:'İşlem geçmişi',staff:'Personel yönetimi'};
   return <div className="app-layout"><aside className="sidebar">
     <div className="brand"><Logo/><div><strong>GÜVENLİK</strong><small>Giriş / Çıkış Yönetimi</small></div></div>
     <div className="menu-label">YÖNETİM</div>
-    {[['overview','▦','Genel bakış'],['visits','☷','Ziyaret kayıtları'],['entry','✎','Manuel kayıt'],['qr','▦','QR kod noktası'],...(user.role==='admin'?[['staff','♙','Personel yönetimi']]:[])].map(([key,ico,title])=>
+    {[['overview','▦','Genel bakış'],['visits','☷','Ziyaret kayıtları'],['entry','✎','Manuel kayıt'],['qr','▦','QR kod noktası'],...(user.role==='admin'?[['reports','▥','Raporlar'],['audit','◷','İşlem geçmişi'],['staff','♙','Personel yönetimi']]:[])].map(([key,ico,title])=>
       <button key={key} className={'menu-item '+(tab===key?'selected':'')} onClick={()=>setTab(key)}><span>{ico}</span>{title}</button>)}
     <div className="sidebar-bottom"><div className="avatar">{user.name?.slice(0,1).toLocaleUpperCase('tr')}</div>
       <div className="account-text"><strong>{user.name}</strong><small>{user.role==='admin'?'Yönetici':'Güvenlik görevlisi'}</small></div>
       <button title="Çıkış yap" className="logout" onClick={logout}>↪</button></div>
-  </aside><main className="main-area"><div className="topbar"><div className="breadcrumb">Yönetim Paneli <span>/</span> {({overview:'Genel bakış',visits:'Ziyaret kayıtları',entry:'Manuel kayıt',qr:'QR kod noktası',staff:'Personel'})[tab]}</div>
+  </aside><main className="main-area"><div className="topbar"><div className="breadcrumb">Yönetim Paneli <span>/</span> {labels[tab]}</div>
     <div><Pill tone="green">● Sistem paneli</Pill></div></div>
-    <div className="main-content"><div className="page-header"><div><h1>{({overview:'Genel bakış',visits:'Ziyaret kayıtları',entry:'Manuel kayıt',qr:'QR kod noktası',staff:'Personel yönetimi'})[tab]}</h1>
-      <p>QR ve manuel güvenlik giriş-çıkış takip sistemi</p></div><button className="secondary" onClick={load}>↻ Yenile</button></div>
+    <div className="main-content"><div className="page-header"><div><h1>{labels[tab]}</h1>
+      <p>QR ve manuel güvenlik giriş-çıkış takip sistemi</p></div>{['overview','visits'].includes(tab)&&<button className="secondary" onClick={load}>↻ Yenile</button>}</div>
       <Alert message={notice} kind="success"/><Alert message={failure}/>
       {(tab==='overview'||tab==='visits')&&<><div className="stat-grid">
         {[['İçerideki kişiler',fmt(summary.active),'inside'],['Bugünkü girişler',fmt(summary.today),'daily'],['QR kayıtları',fmt(summary.qr),'qrstat'],['Manuel kayıtlar',fmt(summary.manual),'manual']].map(([label,count,style])=>
           <div className={'stat-card '+style} key={label}><span>{label}</span><strong>{count}</strong><small>Güncel veritabanı bilgisi</small></div>)}</div>
-        <section className="section-card table-section"><div className="section-heading"><div><h3>Ziyaret kayıtları</h3><p className="muted">Girişler, çıkışlar ve kayıt yöntemlerini takip edin.</p></div></div>
+        <section className="section-card table-section"><div className="section-heading"><div><h3>{user.role==='admin'?'Tüm ziyaretçi geçmişi':'Ziyaret kayıtları'}</h3><p className="muted">Girişler, çıkışlar ve kayıt yöntemlerini takip edin.</p></div></div>
           <div className="filters"><input aria-label="Kayıt ara" placeholder="Ad, soyad veya telefon ile ara…" value={query} onChange={e=>setQuery(e.target.value)}/>
-            <label className="check"><input type="checkbox" checked={activeOnly} onChange={e=>setActiveOnly(e.target.checked)}/> Yalnızca içeridekiler</label></div>
+            <label className="check"><input type="checkbox" checked={activeOnly} onChange={e=>setActiveOnly(e.target.checked)}/> Yalnızca içeridekiler</label>
+            <span className="history-count">{total} kayıt</span></div>
           <div className="table-wrap"><table><thead><tr><th>KİŞİ</th><th>TELEFON</th><th>GİRİŞ</th><th>ÇIKIŞ</th><th>YÖNTEM</th><th>DURUM / İŞLEM</th></tr></thead>
             <tbody>{visits.length?visits.map(v=><tr key={v.id}><td><b>{v.firstName} {v.lastName}</b><small>#{v.id}</small></td>
               <td>{v.phone}</td><td><DateCell value={v.entryAt}/></td><td><DateCell value={v.exitAt}/></td>
               <td><Pill tone="info">{v.method==='qr'?'QR':'Manuel'}</Pill></td>
               <td>{v.exitAt?<Pill>Çıkış yaptı</Pill>:<button disabled={busy} className="exit-btn" onClick={()=>exitVisit(v.id)}>Çıkış ver →</button>}</td></tr>):
-              <tr><td className="empty-state" colSpan="6">Henüz bu filtreye uygun kayıt bulunmuyor.</td></tr>}</tbody></table></div></section></>}
+              <tr><td className="empty-state" colSpan="6">Henüz bu filtreye uygun kayıt bulunmuyor.</td></tr>}</tbody></table></div>
+          <div className="pagination"><span>{total} kayıt · Sayfa {page}/{Math.max(1,Math.ceil(total/50))}</span>
+            <div><button className="secondary" disabled={page<=1} onClick={()=>setPage(v=>v-1)}>Önceki</button>
+              <button className="secondary" disabled={page>=Math.max(1,Math.ceil(total/50))} onClick={()=>setPage(v=>v+1)}>Sonraki</button></div></div>
+        </section></>}
       {tab==='entry'&&<div className="center-column"><ManualEntry afterAdd={load}/></div>}
       {tab==='qr'&&<div className="center-column"><QrStation/></div>}
-      {tab==='staff'&&user.role==='admin'&&<div className="center-column"><StaffForm/></div>}
+      {tab==='reports'&&user.role==='admin'&&<Reports/>}
+      {tab==='audit'&&user.role==='admin'&&<AuditLogs/>}
+      {tab==='staff'&&user.role==='admin'&&<StaffForm/>}
       <footer className="app-footer">Güvenlik Giriş-Çıkış Takip Sistemi · Ders projesi prototipi · Veriler erişim yetkileriyle korunmalıdır.</footer>
     </div></main></div>;
 }
