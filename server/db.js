@@ -16,6 +16,7 @@ const schema = [
     email VARCHAR(191) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('admin','guard') NOT NULL DEFAULT 'guard',
+    session_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
   `CREATE TABLE IF NOT EXISTS visits (
@@ -37,14 +38,33 @@ const schema = [
     actor_id BIGINT UNSIGNED NULL,
     visit_id BIGINT UNSIGNED NULL,
     action VARCHAR(40) NOT NULL,
+    target_user_id BIGINT UNSIGNED NULL,
+    details VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_audit_visit (visit_id),
+    INDEX idx_audit_created (created_at),
+    INDEX idx_audit_target (target_user_id),
     FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (visit_id) REFERENCES visits(id) ON DELETE SET NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
 ];
 export async function initDatabase() {
   for (const statement of schema) await db.query(statement);
+  // Var olan veritabanlarında yeni alanları ekle; mevcut ziyaret kayıtları korunur.
+  async function ensureColumn(table,column,definition){
+    const [rows]=await db.execute(
+      'SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=?',
+      [table,column]
+    );
+    if(!rows.length) await db.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+  await ensureColumn('users','session_version','INT NOT NULL DEFAULT 0');
+  await ensureColumn('audit_logs','target_user_id','BIGINT UNSIGNED NULL');
+  await ensureColumn('audit_logs','details','VARCHAR(255) NULL');
+  const [auditIndexes]=await db.execute(
+    "SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='audit_logs' AND INDEX_NAME='idx_audit_created'"
+  );
+  if(!auditIndexes.length) await db.query('ALTER TABLE audit_logs ADD INDEX idx_audit_created (created_at)');
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD;
   if (email && password) {
