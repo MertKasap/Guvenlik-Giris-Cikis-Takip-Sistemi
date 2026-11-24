@@ -265,6 +265,10 @@ function Reports(){
       <div className="report-date-fields"><label>Başlangıç<input type="date" value={from} max={to||undefined} onChange={e=>setFrom(e.target.value)}/></label>
         <label>Bitiş<input type="date" value={to} min={from||undefined} onChange={e=>setTo(e.target.value)}/></label>
         <button className="primary" disabled={busy||!from||!to||from>to} onClick={load}>{busy?'Hesaplanıyor…':'Raporu getir'}</button></div>
+      <div className="report-export-actions">
+        <a className="secondary download-link" href={'/api/export/visits.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>Ziyaretçi kayıtlarını CSV indir</a>
+        <a className="secondary download-link" href={'/api/export/audit.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>İşlem geçmişini CSV indir</a>
+      </div>
       <Alert message={error}/>
     </section>
     {data&&<><div className="report-stat-grid">
@@ -296,7 +300,8 @@ function AuditLogs(){
   const actionName={entry:'Giriş kaydı',exit:'Çıkış kaydı',staff_create:'Personel hesabı oluşturma',password_reset:'Personel şifresi sıfırlama'};
   const pageCount=Math.max(1,Math.ceil(data.total/50));
   return <section className="section-card audit-card"><div className="section-heading"><div><h3>İşlem geçmişi</h3><p className="muted">Ziyaretçi ve yönetici işlemleri; işlemi yapan kişi ve zaman bilgisiyle listelenir.</p></div>
-      <button className="secondary" type="button" disabled={busy} onClick={load}>↻ Yenile</button></div>
+      <div className="audit-actions"><a className="secondary download-link" href={'/api/export/audit.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>CSV indir</a>
+        <button className="secondary" type="button" disabled={busy} onClick={load}>↻ Yenile</button></div></div>
     <div className="audit-filters"><label>Başlangıç<input type="date" value={from} max={to||undefined} onChange={e=>setFrom(e.target.value)}/></label>
       <label>Bitiş<input type="date" value={to} min={from||undefined} onChange={e=>setTo(e.target.value)}/></label></div>
     <Alert message={error}/>

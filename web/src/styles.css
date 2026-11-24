@@ -55,3 +55,7 @@
   .pagination{align-items:flex-start;flex-direction:column}
   .history-count{margin-left:0}
 }
+
+.report-export-actions,.audit-actions{display:flex;gap:10px;flex-wrap:wrap}
+.download-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:13px}
+@media(max-width:700px){.report-export-actions,.audit-actions{display:grid;grid-template-columns:1fr}.audit-actions{width:100%}}

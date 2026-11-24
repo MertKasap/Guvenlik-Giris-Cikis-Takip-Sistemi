@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { db } from './db.js';
-import { cleanPerson, phoneLookupVariants, issueQrToken, validateQrToken, receiptCode, receiptHash } from './core.js';
+import { cleanPerson, phoneLookupVariants, issueQrToken, validateQrToken, receiptCode, receiptHash, csvCell } from './core.js';
 const app=express();
 app.set('trust proxy',1);
 app.disable('x-powered-by');
@@ -189,6 +189,46 @@ function readDateRange(query,required=false){
   if(required&&(!from||!to)) throw error('Başlangıç ve bitiş tarihlerini seçin.');
   return {from,to};
 }
+function sendCsv(res,filename,headers,rows){
+  const content=[headers,...rows].map(row=>row.map(csvCell).join(',')).join('\r\n');
+  res.setHeader('Content-Type','text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition',`attachment; filename="${filename}"`);
+  res.send('\uFEFF'+content);
+}
+app.get('/api/export/visits.csv',auth,onlyAdmin,wrap(async(req,res)=>{
+  const {from,to}=readDateRange(req.query);
+  const where=[],params=[];
+  if(from){where.push('entry_at >= ?');params.push(from+' 00:00:00');}
+  if(to){where.push('entry_at < DATE_ADD(?, INTERVAL 1 DAY)');params.push(to);}
+  const [rows]=await db.execute(
+    'SELECT id,first_name,last_name,phone,entry_at,exit_at,method FROM visits'+
+    (where.length?' WHERE '+where.join(' AND '):'')+' ORDER BY entry_at DESC,id DESC',params
+  );
+  sendCsv(res,'ziyaretci-kayitlari.csv',
+    ['Kayıt No','Ad','Soyad','Telefon','Giriş Tarihi','Çıkış Tarihi','Kayıt Yöntemi'],
+    rows.map(row=>[row.id,row.first_name,row.last_name,row.phone,row.entry_at,row.exit_at,row.method==='qr'?'QR':'Manuel'])
+  );
+}));
+app.get('/api/export/audit.csv',auth,onlyAdmin,wrap(async(req,res)=>{
+  const {from,to}=readDateRange(req.query);
+  const where=[],params=[];
+  if(from){where.push('al.created_at >= ?');params.push(from+' 00:00:00');}
+  if(to){where.push('al.created_at < DATE_ADD(?, INTERVAL 1 DAY)');params.push(to);}
+  const [rows]=await db.execute(
+    `SELECT al.id,al.created_at,COALESCE(actor.name,'Ziyaretçi (QR)') AS actorName,
+      actor.role AS actorRole,al.action,CONCAT_WS(' ',v.first_name,v.last_name) AS visitorName,
+      target.name AS targetUserName,al.details
+      FROM audit_logs al
+      LEFT JOIN users actor ON actor.id=al.actor_id
+      LEFT JOIN visits v ON v.id=al.visit_id
+      LEFT JOIN users target ON target.id=al.target_user_id`+
+    (where.length?' WHERE '+where.join(' AND '):'')+' ORDER BY al.created_at DESC,al.id DESC',params
+  );
+  sendCsv(res,'islem-gecmisi.csv',
+    ['İşlem No','Tarih','İşlemi Yapan','Rol','İşlem','Ziyaretçi','İlgili Personel','Açıklama'],
+    rows.map(row=>[row.id,row.created_at,row.actorName,row.actorRole||'QR ziyaretçisi',row.action,row.visitorName,row.targetUserName,row.details])
+  );
+}));
 app.get('/api/audit-logs',auth,onlyAdmin,wrap(async(req,res)=>{
   const {from,to}=readDateRange(req.query);
   const where=[],params=[];
