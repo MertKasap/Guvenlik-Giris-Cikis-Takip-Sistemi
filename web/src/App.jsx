@@ -225,7 +225,7 @@ function dateLabel(value){
   const [y,m,d]=String(value).slice(0,10).split('-');
   return new Date(Number(y),Number(m)-1,Number(d),12).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
 }
-function Reports(){
+function Reports({isAdmin}){
   const [from,setFrom]=useState(()=>localDate(-13)),[to,setTo]=useState(()=>localDate(0));
   const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
   const load=useCallback(async()=>{
@@ -256,7 +256,7 @@ function Reports(){
         <button className="primary" disabled={busy||!from||!to||from>to} onClick={load}>{busy?'Hesaplanıyor…':'Raporu getir'}</button></div>
       <div className="report-export-actions">
         <a className="secondary download-link" href={'/api/export/visits.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>Ziyaretçi kayıtlarını CSV indir</a>
-        <a className="secondary download-link" href={'/api/export/audit.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>İşlem geçmişini CSV indir</a>
+        {isAdmin&&<a className="secondary download-link" href={'/api/export/audit.csv?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)}>İşlem geçmişini CSV indir</a>}
       </div>
       <Alert message={error}/>
     </section>
@@ -335,7 +335,7 @@ function Dashboard({user,onLogout}){
   return <div className="app-layout"><aside className="sidebar">
     <div className="brand"><Logo/><div><strong>GÜVENLİK</strong><small>Giriş / Çıkış Yönetimi</small></div></div>
     <div className="menu-label">YÖNETİM</div>
-    {[['overview','▦','Genel bakış'],['visits','☷','Ziyaret kayıtları'],['entry','✎','Manuel kayıt'],['qr','▦','QR kod noktası'],...(user.role==='admin'?[['reports','▥','Raporlar'],['audit','◷','İşlem geçmişi'],['staff','♙','Personel yönetimi']]:[])].map(([key,ico,title])=>
+    {[['overview','▦','Genel bakış'],['visits','☷','Ziyaret kayıtları'],['entry','✎','Manuel kayıt'],['qr','▦','QR kod noktası'],['reports','▥','Raporlar'],...(user.role==='admin'?[['audit','◷','İşlem geçmişi'],['staff','♙','Personel yönetimi']]:[])].map(([key,ico,title])=>
       <button key={key} className={'menu-item '+(tab===key?'selected':'')} onClick={()=>setTab(key)}><span>{ico}</span>{title}</button>)}
     <div className="sidebar-bottom"><div className="avatar">{user.name?.slice(0,1).toLocaleUpperCase('tr')}</div>
       <div className="account-text"><strong>{user.name}</strong><small>{user.role==='admin'?'Yönetici':'Güvenlik görevlisi'}</small></div>
@@ -364,7 +364,7 @@ function Dashboard({user,onLogout}){
         </section></>}
       {tab==='entry'&&<div className="center-column"><ManualEntry afterAdd={load}/></div>}
       {tab==='qr'&&<div className="center-column"><QrStation/></div>}
-      {tab==='reports'&&user.role==='admin'&&<Reports/>}
+      {tab==='reports'&&<Reports isAdmin={user.role==='admin'}/>}
       {tab==='audit'&&user.role==='admin'&&<AuditLogs/>}
       {tab==='staff'&&user.role==='admin'&&<StaffForm/>}
       <footer className="app-footer">Güvenlik Giriş-Çıkış Takip Sistemi · Ders projesi prototipi · Veriler erişim yetkileriyle korunmalıdır.</footer>
