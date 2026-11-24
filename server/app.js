@@ -263,7 +263,7 @@ app.get('/api/reports/range',auth,onlyAdmin,wrap(async(req,res)=>{
     [from,to,from,to,from,to,from,to]
   );
   const [days]=await db.execute(
-    `SELECT DATE_FORMAT(activity_at,'%Y-%m-%d') AS day,SUM(entries) AS entries,SUM(exits) AS exits
+    `SELECT DATE(activity_at) AS day,SUM(entries) AS entries,SUM(exits) AS exits
       FROM (
         SELECT entry_at AS activity_at,1 AS entries,0 AS exits FROM visits
           WHERE entry_at>=? AND entry_at<DATE_ADD(?,INTERVAL 1 DAY)
