@@ -178,17 +178,6 @@ function ManualEntry({afterAdd}){
 function DateCell({value}){return value?<span>{new Date(String(value).replace(' ','T')).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>:<span className="muted">—</span>;}
 function StaffForm(){
   const [form,setForm]=useState({name:'',email:'',password:'',role:'guard'}),[message,setMessage]=useState(''),[error,setError]=useState('');
-  async function submit(e){e.preventDefault();try{await api('/staff','POST',form);setMessage('Personel hesabı oluşturuldu.');setError('');setForm({name:'',email:'',password:'',role:'guard'});}
-    catch(e){setError(e.message);setMessage('');}}
-  return <section className="section-card"><div className="section-heading"><div><h3>Personel hesabı oluştur</h3><p className="muted">Bu bölüm yalnızca yöneticiye açıktır.</p></div></div>
-    <form onSubmit={submit} className="staff-form"><label>Ad Soyad<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label>
-      <label>E-posta<input required type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label>
-      <label>Şifre (en az 12 karakter)<input required type="password" minLength="12" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/></label>
-      <label>Yetki<select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}><option value="guard">Güvenlik görevlisi</option><option value="admin">Yönetici</option></select></label>
-      <Alert message={error}/><Alert message={message} kind="success"/><button className="primary">Hesap oluştur</button></form></section>;
-}
-function StaffForm(){
-  const [form,setForm]=useState({name:'',email:'',password:'',role:'guard'}),[message,setMessage]=useState(''),[error,setError]=useState('');
   const [staff,setStaff]=useState([]),[resetPasswords,setResetPasswords]=useState({}),[resetMessages,setResetMessages]=useState({}),[busyId,setBusyId]=useState(null);
   const loadStaff=useCallback(async()=>{try{const r=await api('/staff');setStaff(r.staff||[]);}catch(e){setError(e.message);}},[]);
   useEffect(()=>{loadStaff();},[loadStaff]);
