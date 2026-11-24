@@ -77,3 +77,9 @@ export function receiptHash(code) {
     ? value.replace(/-/g, '').toUpperCase() : value;
   return crypto.createHash('sha256').update(normalized).digest('hex');
 }
+
+export function csvCell(input) {
+  let value=String(input ?? '');
+  if (/^\s*[=+@-]/.test(value)) value="'"+value;
+  return '"'+value.replace(/"/g,'""')+'"';
+}

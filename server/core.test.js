@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanPerson, normalizePhone, phoneLookupVariants, issueQrToken, validateQrToken, receiptCode, receiptHash } from './core.js';
+import { cleanPerson, normalizePhone, phoneLookupVariants, issueQrToken, validateQrToken, receiptCode, receiptHash, csvCell } from './core.js';
 
 process.env.QR_SIGNING_SECRET='unique-test-secret-longer-than-thirty-two-characters';
 
@@ -39,4 +39,10 @@ test('Eski base64url çıkış kodları değiştirilmeden hashlenir',()=>{
   const old='zQ70He4pm7k-qBaBsiRG-LlE';
   assert.equal(receiptHash(old),receiptHash(old));
   assert.notEqual(receiptHash(old),receiptHash(old.toUpperCase()));
+});
+
+test('CSV hücreleri Excel formül enjeksiyonuna karşı güvenli yazılır',()=>{
+  assert.equal(csvCell('Ali "Test"'),'"Ali ""Test"""');
+  assert.equal(csvCell('=1+1'),"\"'=1+1\"");
+  assert.equal(csvCell('normal'),'"normal"');
 });
